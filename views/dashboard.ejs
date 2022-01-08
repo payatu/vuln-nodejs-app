@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<title>Dashboard</title>
+<head>
+<style>
+.logoutLblPos{
+
+   position:fixed;
+   right:10px;
+   top:5px;
+}
+</style>
+</head>
+<body>
+<h3 style="display:inline;">Welcome <div id="user" style="display:inline;"></div></h3>
+<br>
+<p>Site Manger API token: <pre id='token'></pre>
+<input type="button" value="Show" onclick="showToken()">
+<form align="right" name="form1" method="get" action="logout">
+  <label class="logoutLblPos">
+  <input name="submit" type="submit" value="log out">
+  </label>
+</form>
+
+<script>
+
+if (!window.localStorage.getItem('token')){;
+  window.location = '/auth';
+}
+
+const token = window.localStorage.getItem('token'); 
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        var username = xhr.responseText;
+        document.getElementById('user').innerHTML = username;
+    }
+}
+
+xhr.open('GET', 'http://tauheedkhan.com/userinfo', true); 
+xhr.withCredentials = true;
+xhr.setRequestHeader('authorization', token); 
+xhr.send();
+
+function showToken(){
+  const username = document.getElementById('user').innerHTML
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      var token = xhr.responseText;
+      document.getElementById('token').innerHTML = token;
+    }
+  }
+  xhr.open('GET', 'http://tauheedkhan.com/sitetoken/' + username, true);
+  xhr.withCredentials = true;
+  xhr.setRequestHeader('authorization', token);
+  xhr.send();
+}
+
+</script>
+</body>
+</html>

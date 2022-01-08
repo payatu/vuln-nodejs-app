@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+</html>
+
+<body>
+    <h2>Check number of trains running from Delhi to your city</h2><br>
+    <input type="text" id="val1" value="Delhi" readonly> <br><br>to<br><br>
+    <select name="Cars" id="val2" size="5">
+        <option value="Kolkata"> kolkata </option>
+        <option value="Mumabi"> Mumbai </option>
+        <option value="Lucknow"> Lucknow </option>
+        <option value="Chennai"> Chennai </option>
+        <option value="Ahmedabad"> Ahmedabad </option>
+    </select>
+    
+    <input type="button" value="Submit" onclick="submit()">
+    <h5>
+        <pre id="result"></pre>
+    </h5>
+    <script>
+        function submit() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const res = JSON.parse(xhr.responseText);
+                    document.getElementById("result").innerHTML = "Number of trains " + res[0].ntrains + ".";
+                }
+            }
+            xhr.open('GET', 'http://tauheedkhan.com/sqli-fixed/' + val1.value + '-' + val2.value, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.withCredentials = true;
+            xhr.send();
+        }
+    </script>
+    <h3>
+        Fixed Code:
+    </h3>
+    <h4><pre>
+```
+router.get('/sqli-fixed/:from-:to', vuln_handler.fixed_sqli_check_train_get);
+...
+const fixed_sqli_check_train_get = (req, res) => {
+    const from = req.params.from;
+    const to = req.params.to;
+    db.Train.findAll({where:{from_stnt: from, to_stnt: to }}).then((trains)=> res.send(trains))
+    .catch(()=>res.send('Internal error occured!'));
+}
+```
+</pre>
+</h4>
+Vulnerability is fixed by using using model's `findAll` method instead of executing raw query using pool.
+</body>
+
+</html>
