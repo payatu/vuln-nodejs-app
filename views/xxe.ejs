@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html>
-<title> XXE Lab</title>
-<body>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
 <h3> XXE Lab</h3>
-<h4>Comment</h4>
+<br>
 <p> Application is using `libxmljs` for parsing xml which allows parsing of external entities if `noent` flag is set to `true`.</p>
-<h5> Vulnerable Code:
+<h5> Vulnerable Code:</h5>
+<div class="jumbotron">
 <pre>
   var libxmljs = require('libxmljs');
   ....
@@ -14,13 +23,14 @@
   var comment = parsecomment.get('//content');
   comment = comment.text();
   res.send(comment)
-
-
-<textarea id="comment" rows="10" cols="100"></textarea>
+</pre>
+</div>
+<h3>Comment</h3>
+<textarea id="comment" rows="8" cols="50"></textarea>
 <br><br>
 <input type="button" id="postcomment" value="post" onclick="postcomment()">
 <div id="comment-div" hidden="true">
-<h5> Your Comment:<h5>
+<h5> Your Comment:<h5></h5>
 <pre id="user-comment">
 </pre>
 </h5> 

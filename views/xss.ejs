@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html>
-<title>XSS</title>
-<body>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
 <h4> Exploit 1:</h4><p> User supplied input rendered without santizing.</p>
 
 <form action="/xss" method="get">
@@ -11,12 +19,13 @@
 <% if (xss1){%>
 <br> <h5> Welcome <%- xss1 %></h5>
 <% }%>
+<br><br>
 <h4> Exploit 2:</h4><p>HTML encoding is used but user supplied input is rendered inside script tag.</p>
 <form action="/xss" method="get">
   <input type="text" id="xss2" name="xss2">
   <input type="submit" value="submit">
 </form>
-<br>
+<br><br>
 <h4> Exploit 3:</h4><p> xss inside json, here application uses &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create
 json object with user supplied input since it uses &#x3c;%- instead of &#x3c;%= ejs will not encode html charater also JSON.stringify
 will escape double quotes that means we have to find a way to break out of the double quote to do that we will use this 

@@ -14,6 +14,9 @@ sequelize
 const Train = sequelize.define('train', {'from_stnt': Sequelize.STRING, 
     'to_stnt': Sequelize.STRING, 'ntrains': Sequelize.INTEGER});
 
+const Users = sequelize.define('users', {'username': Sequelize.STRING,
+    'email': Sequelize.STRING, 'password': Sequelize.STRING})
+
 sequelize.sync({force: true})
     .then(()=>{
         Train.bulkCreate([

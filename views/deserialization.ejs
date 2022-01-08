@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
+    <h2>Vulnerability: Insecure Deserialisation</h3>
+        <br>
+            <h3 style="color:rgb(47, 99, 184)"> Shoe preference </h3>
+            <br>
+            <tr>
+                <td>
+                    Brand:
+                </td>
+            </tr>
+            <tr>
+                <td> Nike <input type="checkbox" id="brand1" name="brand" value="Nike"> </td>
+                <td> Asics <input type="checkbox" id="brand2" name="brand" value="Asics"> </td>
+            </tr>
+            <tr>
+                <td> Puma <input type="checkbox" id="brand3" name="brand" value="Puma"> </td>
+                <td> Reebok <input type="checkbox" id="brand4" name="brand" value="Reebok"> </td>
+            </tr>
+            <tr>
+                <td> Jordan <input type="checkbox" id="brand5" name="brand" value="Jordan"> </td>
+                <br> <br>
+            <tr>
+                <td>
+                    Color:
+                </td>
+            </tr>
+            <tr>
+                <td> Black <input type="checkbox" id="color1" name="color" value="Black"> </td>
+                <td> Brown <input type="checkbox" id="color2" name="color" value="Brown"> </td>
+            </tr>
+            <tr>
+                <td> Blue <input type="checkbox" id="color3" name="color" value="Blue"> </td>
+                <td> White <input type="checkbox" id="color4" name="color" value="White"> </td>
+            </tr>
+            <tr>
+                <br> <br>
+                <button id="btn">Submit</button> <br>
+                <h4 style="color:green" id="result"></h4>
+
+                <script>
+                    document.getElementById('btn').onclick = function () {
+                        var brand = [];
+                        var markedBrand = document.getElementsByName('brand');
+                        for (var checkbox of markedBrand) {
+                            if (checkbox.checked) {
+                                brand.push(checkbox.value);
+                            }
+                        }
+                        var color = []
+                        var markedColor = document.getElementsByName('color');
+                        for (var pcolor of markedColor) {
+                            if (pcolor.checked) {
+                                color.push(pcolor.value)
+                            }
+                        }
+                        savePreference(brand, color);
+
+                    }
+                    function savePreference(prebrand, precolor) {
+                        var preference = { "brand": "", "color": "" };
+                        preference.brand = prebrand;
+                        preference.color = precolor;
+                        console.log(preference)
+                        var preference = JSON.stringify(preference);
+                        document.cookie = 'preference='+preference;
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                document.getElementById('result').innerHTML = "Preference updated!";
+                            }
+                        }
+                        xhr.open('POST', 'http://tauheedkhan.com/save-preference', true);
+                        xhr.withCredentials = true;
+                        console.log(preference)
+                        xhr.send("setPreference=True");
+                    }
+
+                </script>
+
+        </b>
+</body>
+
+</html>

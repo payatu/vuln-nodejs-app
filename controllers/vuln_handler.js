@@ -3,8 +3,10 @@ var execFile = require('child_process').execFile;
 var libxmljs = require('libxmljs');
 var jwt = require('jsonwebtoken');
 var db = require('../models/trains');
+var serialize = require('node-serialize');
 const { Pool } = require('pg');
 const { Train } = require('../models/trains');
+var ejs = require('ejs')
 
 const pool = new Pool({
     host: "localhost",
@@ -26,8 +28,9 @@ function generateAccessToken(username) {
 }
 
 function authenticateToken(req, res, next) {
-    const token = req.headers['authorization'];
-    if (token == null) return res.sendStatus(401)
+    const token = req.cookies.authToken;
+    if (token == null) 
+        return res.redirect('http://tauheedkhan.com/register')
 
     jwt.verify(token, secret, (err, user) => {
         console.log(err)
@@ -92,7 +95,7 @@ const sqli_get = (req, res) => {
 const sqli_check_train_get = (req, res) => {
     const from = req.params.from;
     const to = req.params.to;
-    const q = "SELECT ntrains FROM trains where from_stnt='"+ from +"' and to_stnt='"+to+"';";
+    const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
     console.log(q);
     pool.query(q, (error, results) => {
         if (error) {
@@ -103,20 +106,17 @@ const sqli_check_train_get = (req, res) => {
     })
 }
 
-const sqli_fixed_get = (req, res)=> {
+const sqli_fixed_get = (req, res) => {
     res.render('sqli-fixed');
 }
 
 const fixed_sqli_check_train_get = (req, res) => {
     const from = req.params.from;
     const to = req.params.to;
-    db.Train.findAll({where:{from_stnt: from, to_stnt: to }}).then((trains)=> res.send(trains))
-    .catch(()=>res.send('Internal error occured!'));
+    db.Train.findAll({ where: { from_stnt: from, to_stnt: to } }).then((trains) => res.send(trains))
+        .catch(() => res.send('Internal error occured!'));
 }
 
-const jwt1_get = (req, res) => {
-    res.render('jwt1');
-}
 
 const xxe_get = (req, res) => {
     res.render('xxe', {
@@ -136,11 +136,16 @@ const auth_get = (req, res) => {
     res.render('auth');
 }
 
+const register_get = (req, res) => {
+    res.render('register.ejs');
+}
+
 const register_post = (req, res) => {
     const username = req.body.username;
     const email = req.body.username;
     const password = req.body.password;
     const token = generateAccessToken(username);
+    res.cookie('authToken', token);
     res.send(token);
 }
 
@@ -161,8 +166,38 @@ const userinfo_get = (req, res) => {
     res.send(req.user);
 }
 
+const deserialization_get = (req, res) => {
+    res.render('deserialization');
+}
+
 const logout_get = (req, res) => {
-    res.redirect('/auth');
+    res.clearCookie('authToken', '')
+    res.redirect('/register');
+}
+const save_preference_post = (req, res) => {
+    const preference = serialize.unserialize(req.cookies.preference)
+    console.log(preference)
+    res.send(preference);
+}
+
+const ssti = (req, res) => {
+    const op = req.query.op;
+    var totalTrains = 'Total Number of Trains: 37';
+    var totalStation = 'Total Number of Station: 4';
+    var stationList = `{"stationList": ["Lucknow", "Mumbai", "Delhi", "Kanpur"]}`
+    if (req.query.op){
+        var template = `Result: <p><%=` + op + `%>`;
+    } else {
+        var template = `<a href="/ssti?op=stationList">Station List</a>
+        <br>
+        <a href="/ssti?op=totalTrains">Total Trains</a>
+        <br>
+        <a href="/ssti?op=totalStation">Total Station</a>`;
+    }
+    res.send(ejs.render(template, { totalTrains: totalTrains,
+        totalStation: totalStation,
+        stationList: stationList
+    }));
 }
 
 module.exports = {
@@ -174,7 +209,6 @@ module.exports = {
     xxe_get,
     xxe_comment,
     auth_get,
-    register_post,
     sitetoken_get,
     dashboard_get,
     userinfo_get,
@@ -182,6 +216,10 @@ module.exports = {
     sqli_check_train_get,
     fixed_sqli_check_train_get,
     sqli_fixed_get,
-    jwt1_get,
+    deserialization_get,
+    save_preference_post,
+    ssti,
+    register_get,
+    register_post,
     logout_get
 }

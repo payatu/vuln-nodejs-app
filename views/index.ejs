@@ -1,20 +1,99 @@
-<!DOCTYPE html>
-<html>
-<title>Vulnerable NodeJs app</title> 
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.html') %>
+</head>
+
 <body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <div class='row'>
+            <div class='col-md-12'>
 <h2>Vulnerabilities</h2>
-<a href="/ping">Command Injection</a>
-<br>
-<a href="/sqli">SQL Injection</a>
-<br>
-<a href="/xss">XSS</a>
-<br>
-<a href="/xxe">XXE</a>
-<br>
-<a href="/auth">IDOR</a>
-<br>
-<a href="/jwt1">JWT I</a>
-<br>
+<div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Command Injection</h5>
+          <p class="card-text">Application is using exec method to run ping, your goal is to acheive the Remote Code Execution.</p>
+          <a href="/ping" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Insecure Deserialization</h5>
+          <p class="card-text">Application is using node-serialize method unserialize to parse preference cookie, your goal is to acheive the RCE.</p>
+          <a href="/deserialization" class="btn btn-primary">Exploit   -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">SQL Injection</h5>
+          <p class="card-text">Application is concatinating user supplied to SQL statement without any validation.</p>
+          <a href="/sqli" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">XXE</h5>
+          <p class="card-text">Application is using libxmljs to parse xml file but noent flag is set to true which enable external entities parsing.</p>
+          <a href="/xxe" class="btn btn-primary">Exploit   -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">XSS</h5>
+          <p class="card-text">Explore multiple XSS vulnerabilities occuring in different contexts.</p>
+          <a href="/xss" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">SSTI</h5>
+          <p class="card-text">Application is dynamically rendering template</p>
+          <a href="/ssti" class="btn btn-primary">Exploit   -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">JWT 1</h5>
+          <p class="card-text">Application is using weak JWT secret to create JWT that can lead to authentication bypass.</p>
+          <a href="/jwt-1" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">LFI</h5>
+          <p class="card-text">Application is dynamically rendering template</p>
+          <a href="/ssti" class="btn btn-primary">Exploit   -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </title>
 </html>

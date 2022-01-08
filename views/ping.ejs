@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html>
-<title>Command Injection lab</title>
-<body>
-<h3> Command Injection:</h3> <p> user supplied input directly passed to exec function without santization</p>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
+<h2> Command Injection:</h2> <p> User supplied input directly passed to exec function without santization.</p>
 <h5> Vulnerable Code:</h5>
-<h3>
+<h5>
+  <div class="jumbotron">
 <pre>
   const exec = require('child_process').exec
   ....  
@@ -17,6 +26,7 @@
     });
   })
 </pre>
+</div>
 <form action="/ping" method="POST">
   <input type="text" name="ping">
   <input type="submit" value="ping">
@@ -33,7 +43,8 @@
 <p> In this version application uses `execFile` function from the `child_process` module that starts a specific program
 and takes an array of arguments.
 <h5> Fixed Code</h5>
-<h3>
+<h5>
+  <div class="jumbotron">
 <pre>
   const execFile = require('child_process').execFile;
   ...
@@ -45,18 +56,18 @@ and takes an array of arguments.
     });
   });
 </pre>
+</div>
 <form action="/ping" method="POST">
   <input type="text" name="ping1">
   <input type="submit" value="ping1">
 </form>
-<h5>
 <% if (pingoutput) { %>
 <p> Command Output </p>
 <pre>
 <%= pingoutput %>
 </pre>
 <% } %>
-</h3>
+</h5>
 </body>
 </html>
 

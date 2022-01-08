@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html>
-
-</html>
-
-<body>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
     <h2>Check number of trains running from Delhi to your city</h2><br>
     <input type="text" id="val1" value="Delhi" readonly> <br><br>to<br><br>
     <select name="Cars" id="val2" size="5">
@@ -13,7 +19,6 @@
         <option value="Chennai"> Chennai </option>
         <option value="Ahmedabad"> Ahmedabad </option>
     </select>
-    
     <input type="button" value="Submit" onclick="submit()">
     <h5>
         <pre id="result"></pre>
@@ -33,10 +38,14 @@
             xhr.send();
         }
     </script>
-    <h3>
+    <br>
+    <h4>
         Vulnerable Code:
-    </h3>
-    <h3><pre>
+    </h4>
+    <br>
+    <h5>
+        <div class="jumbotron">
+        <pre>
 ```
 router.get('/sqli/:from-:to', vuln_handler.sqli_check_train_get);
 ...
@@ -55,12 +64,13 @@ pool.query(q, (error, results) => {
 }
 ```
 </pre>
+</div>
 </h3>
 Vulnerability is arising because application code is not validating user    supplied input before concatinating it into the SQL query which leads to sql injection. Instead of 
 directly adding user supplied input to sql query use prepared statements to protect agains sql injection
 attacks or use Train model to get details.
 <br><br>
-<a href="/sqli-fixed">Fixed SQL Injection</a>
+<h4><a href="/sqli-fixed">Fixed SQL Injection -&#x3e;</a></h4>
 <br><br>
 </body>
 
