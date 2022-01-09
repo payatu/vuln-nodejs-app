@@ -1,6 +1,6 @@
 # vuln-nodejs-app
 <br>
-<a href="https://ibb.co/fQqR1Cg"><img src="https://i.ibb.co/V3Jyjv1/vuln-nodejs-app.png" alt="vuln-nodejs-app" border="0">
+<a href="https://github.com/tauh33dkhan/vuln-nodejs-app/blob/master/vuln-nodejs-app.png?raw=true"><img src="https://github.com/tauh33dkhan/vuln-nodejs-app/blob/master/vuln-nodejs-app.png?raw=true" alt="vuln-nodejs-app" border="0">
 <br>
 </a>## Installation
 
