@@ -5,7 +5,7 @@
 1. Download
 
 ```bash
-git clone https://tauh33dkhan/vuln-nodejs-app.git
+git clone https://github.com/tauh33dkhan/vuln-nodejs-app.git
 cd ./vuln-nodejs-app
 ```
 
