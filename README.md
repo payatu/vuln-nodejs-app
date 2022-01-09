@@ -1,4 +1,4 @@
-# vuln-nodejs-app
+# Vulnerable NodeJS Application
 <br>
 <a href="https://github.com/tauh33dkhan/vuln-nodejs-app/blob/master/vuln-nodejs-app.png?raw=true"><img src="https://github.com/tauh33dkhan/vuln-nodejs-app/blob/master/vuln-nodejs-app.png?raw=true" alt="vuln-nodejs-app" border="0">
 <br>
