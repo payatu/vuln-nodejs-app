@@ -20,7 +20,7 @@ mysql> create database vuln_nodejs_app;
 
 3. Update your mysql username and password inside **env.js** file.
 
-```json
+```html
 module.exports = {
   listen: "0.0.0.0",
   port:	  "9000",
