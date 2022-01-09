@@ -1,6 +1,8 @@
 # vuln-nodejs-app
-
-## Installation
+<br>
+<a href="https://ibb.co/fQqR1Cg"><img src="https://i.ibb.co/V3Jyjv1/vuln-nodejs-app.png" alt="vuln-nodejs-app" border="0">
+<br>
+</a>## Installation
 
 1. Download
 
@@ -49,4 +51,5 @@ node server.js
 * Dockerize the application.
 * Add more vulnerabilites.
 * Use database to store user information.
+* Support both mysql and postgresql server for local installation.
 
