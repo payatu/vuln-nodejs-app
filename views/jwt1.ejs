@@ -43,7 +43,7 @@ function generateAccessToken(username, email) {
                         document.getElementById("apiKey").value = xhr.response;
                     }
                 }
-                xhr.open('GET', 'http://tauheedkhan.com/jwt1/apiKey')
+                xhr.open('GET', window.location.origin+'/jwt1/apiKey')
                 xhr.withCredentials = true;
                 xhr.send();
             }

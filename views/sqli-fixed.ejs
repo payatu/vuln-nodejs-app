@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html>
-
-</html>
-
-<body>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.html') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
     <h2>Check number of trains running from Delhi to your city</h2><br>
-    <input type="text" id="val1" value="Delhi" readonly> <br><br>to<br><br>
+      </p>Vulnerability is fixed by using using model's <code class="highlighter-rouge">`findAll`</code> method instead of executing raw query using pool.</p>
+    <br>
+    <input type="text" id="val1" value="Delhi" readonly> <br><br>To<br><br>
     <select name="Cars" id="val2" size="5">
         <option value="Kolkata"> kolkata </option>
         <option value="Mumabi"> Mumbai </option>
@@ -33,11 +41,13 @@
             xhr.send();
         }
     </script>
+    <br>
     <h3>
         Fixed Code:
     </h3>
-    <h4><pre>
-```
+    <h5>
+        <div class="jumbotron">
+            <pre>
 router.get('/sqli-fixed/:from-:to', vuln_handler.fixed_sqli_check_train_get);
 ...
 const fixed_sqli_check_train_get = (req, res) => {
@@ -46,10 +56,9 @@ const fixed_sqli_check_train_get = (req, res) => {
     db.Train.findAll({where:{from_stnt: from, to_stnt: to }}).then((trains)=> res.send(trains))
     .catch(()=>res.send('Internal error occured!'));
 }
-```
 </pre>
-</h4>
-Vulnerability is fixed by using using model's `findAll` method instead of executing raw query using pool.
+</div>
+</h5>
 </body>
 
 </html>

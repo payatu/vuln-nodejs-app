@@ -12,7 +12,7 @@
       <div class='container' style='min-height: 450px'>
     <h2>Vulnerability: Insecure Deserialisation</h3>
         <br>
-            <h3 style="color:rgb(47, 99, 184)"> Shoe preference </h3>
+            <h3> Shoe preference </h3>
             <br>
             <tr>
                 <td>
@@ -45,7 +45,7 @@
             </tr>
             <tr>
                 <br> <br>
-                <button id="btn">Submit</button> <br>
+                <button id="btn">Submit</button> <br><br>
                 <h4 style="color:green" id="result"></h4>
 
                 <script>
@@ -80,7 +80,7 @@
                                 document.getElementById('result').innerHTML = "Preference updated!";
                             }
                         }
-                        xhr.open('POST', 'http://tauheedkhan.com/save-preference', true);
+                        xhr.open('POST', window.location.origin+'/save-preference', true);
                         xhr.withCredentials = true;
                         console.log(preference)
                         xhr.send("setPreference=True");

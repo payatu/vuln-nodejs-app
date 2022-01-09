@@ -12,7 +12,7 @@
       <div class='container' style='min-height: 450px'>
 <h3> XXE Lab</h3>
 <br>
-<p> Application is using `libxmljs` for parsing xml which allows parsing of external entities if `noent` flag is set to `true`.</p>
+<p> Application is using <code class="highlighter-rouge">libxmljs</code> for parsing xml which allows parsing of external entities if  <code class="highlighter-rouge">noent</code> flag is set to  <code class="highlighter-rouge">true</code>.</p>
 <h5> Vulnerable Code:</h5>
 <div class="jumbotron">
 <pre>
@@ -26,13 +26,14 @@
 </pre>
 </div>
 <h3>Comment</h3>
+<h5> Your Comment:</h5>
+<pre id="user-comment">
+</pre>
 <textarea id="comment" rows="8" cols="50"></textarea>
 <br><br>
 <input type="button" id="postcomment" value="post" onclick="postcomment()">
 <div id="comment-div" hidden="true">
-<h5> Your Comment:<h5></h5>
-<pre id="user-comment">
-</pre>
+
 </h5> 
 </div>
 <script>
@@ -47,7 +48,7 @@ function postcomment(){
     }
   }
   data = 'comment=<?xml version="1.0" encoding="UTF-8"?><root><comment><content>'+comment+'</content></comment></root>'
-  xhr.open('POST', 'http://tauheedkhan.com/comment', true); 
+  xhr.open('POST', window.location.origin+'/comment', true); 
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   xhr.withCredentials = true; 
   xhr.send(data);

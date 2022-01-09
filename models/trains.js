@@ -1,6 +1,6 @@
-const pg = require('pg')
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('postgres://postgres:secret@localhost/vulnlab');
+const env = require('../env.js')
+const sequelize = new Sequelize(`mysql://${env.mySQLUser}:${env.mySQLPass}@${env.mySQLHost}/${env.mySQLDB}`);
 
 sequelize
     .authenticate()

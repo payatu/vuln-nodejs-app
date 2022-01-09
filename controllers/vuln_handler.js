@@ -4,23 +4,21 @@ var libxmljs = require('libxmljs');
 var jwt = require('jsonwebtoken');
 var db = require('../models/trains');
 var serialize = require('node-serialize');
-const { Pool } = require('pg');
+const mysql = require('mysql2');
 const { Train } = require('../models/trains');
+var env = require('../env.js');
 var ejs = require('ejs')
 
-const pool = new Pool({
-    host: "localhost",
-    port: "5432",
-    database: "vulnlab",
-    user: "postgres",
-    password: "secret"
-})
+var con = mysql.createConnection({
+    host: env.mySQLHost,
+    port: env.mySQLPort,
+    database: env.mySQLDB,
+    user: env.mySQLUser,
+    password: env.mySQLPass
+  });
 
-// jwt secret
 var secret = "secret";
 
-
-//auth functions
 function generateAccessToken(username, email) {
     const payload = {"username": username};
     return jwt.sign(payload, secret);
@@ -29,7 +27,7 @@ function generateAccessToken(username, email) {
 function authenticateToken(req, res, next) {
     const token = req.cookies.authToken;
     if (token == null) 
-        return res.redirect('http://tauheedkhan.com/register')
+        return res.redirect('/register')
 
     jwt.verify(token, secret, (err, user) => {
         console.log(err)
@@ -95,13 +93,15 @@ const sqli_check_train_get = (req, res) => {
     const to = req.params.to;
     const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
     console.log(q);
-    pool.query(q, (error, results) => {
-        if (error) {
-            res.send(error);
-        } else {
-            res.send(JSON.stringify(results.rows))
-        }
-    })
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(q, (err, results) => {
+          if (err){
+              res.send(err);
+          };
+          res.send(JSON.stringify(results));
+        });
+    });
 }
 
 const sqli_fixed_get = (req, res) => {

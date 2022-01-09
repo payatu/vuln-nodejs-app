@@ -11,7 +11,7 @@
       <%- include ('includes/navigation.ejs') %>
       <div class='container' style='min-height: 450px'>
     <h2>Check number of trains running from Delhi to your city</h2><br>
-    <input type="text" id="val1" value="Delhi" readonly> <br><br>to<br><br>
+    <input type="text" id="val1" value="Delhi" readonly> <br><br>To<br><br>
     <select name="Cars" id="val2" size="5">
         <option value="Kolkata"> kolkata </option>
         <option value="Mumabi"> Mumbai </option>
@@ -20,7 +20,7 @@
         <option value="Ahmedabad"> Ahmedabad </option>
     </select>
     <input type="button" value="Submit" onclick="submit()">
-    <h5>
+    <h5><br>    
         <pre id="result"></pre>
     </h5>
     <script>
@@ -32,7 +32,7 @@
                     document.getElementById("result").innerHTML = "Number of trains " + res[0].ntrains + ".";
                 }
             }
-            xhr.open('GET', 'http://tauheedkhan.com/sqli/' + val1.value + '-' + val2.value, true);
+            xhr.open('GET', window.location.origin+'/sqli/' + val1.value + '-' + val2.value, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.withCredentials = true;
             xhr.send();
@@ -46,23 +46,23 @@
     <h5>
         <div class="jumbotron">
         <pre>
-```
 router.get('/sqli/:from-:to', vuln_handler.sqli_check_train_get);
 ...
 const sqli_check_train_get = (req, res) => {
-const from = req.params.from;
-const to = req.params.to;
-const q = "SELECT ntrains FROM trains where from_stnt='"+ from +"' and to_stnt='"+to+"';";
-//Debug query console.log(q);
-pool.query(q, (error, results) => {
-    if (error) {
-        res.send(error);
-        } else {
-            res.send(JSON.stringify(results.rows))
-        }
-    })
+    const from = req.params.from;
+    const to = req.params.to;
+    const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
+    console.log(q);
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(q, (err, results) => {
+          if (err){
+              res.send(err);
+          };
+          res.send(JSON.stringify(results));
+        });
+    });
 }
-```
 </pre>
 </div>
 </h3>
