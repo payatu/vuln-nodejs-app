@@ -45,4 +45,7 @@ router.get('/ssti', vuln_handler.authenticateToken, vuln_handler.ssti);
 
 router.get('/logout', vuln_handler.authenticateToken, vuln_handler.logout_get);
 
+router.get('/jwt1', vuln_handler.authenticateToken, vuln_handler.jwt1_get);
+
+router.get('/jwt1/apiKey', vuln_handler.authenticateToken, vuln_handler.jwt1ApiKey);
 module.exports = router;

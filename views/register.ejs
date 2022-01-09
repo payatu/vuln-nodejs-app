@@ -29,6 +29,10 @@
                             <input type="password" class="form-control" id="password" placeholder="Password">
                         </div>
                         <button type="submit" onclick="register()" class="btn btn-primary">Submit</button>
+                        <br><br>
+                        <div id="register-error">
+                       
+                        </div>
 
                         <script>
                             function register() {
@@ -41,6 +45,14 @@
                                 xhr.onreadystatechange = function () {
                                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                                         window.location = '/';
+                                    } else if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 403){
+                                        document.getElementById('register-error').innerHTML = `<div class="alert alert-danger" role="alert">
+                                            User already registerd!
+                                            </div>`;
+                                    } else if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 400){
+                                        document.getElementById('register-error').innerHTML = `<div class="alert alert-danger" role="alert">
+                                            username, password and email can not be null!
+                                            </div>`
                                     }
                                 }
                                 const data = 'username=' + username + '&email=' + email + '&password=' + password;

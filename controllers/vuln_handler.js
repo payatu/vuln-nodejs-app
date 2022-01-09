@@ -19,12 +19,11 @@ const pool = new Pool({
 // jwt secret
 var secret = "secret";
 
-// user for BAC lab
-var tokens = { "admin": "ThisIsAdminToken" };
 
 //auth functions
-function generateAccessToken(username) {
-    return jwt.sign(username, secret);
+function generateAccessToken(username, email) {
+    const payload = {"username": username};
+    return jwt.sign(payload, secret);
 }
 
 function authenticateToken(req, res, next) {
@@ -37,7 +36,6 @@ function authenticateToken(req, res, next) {
 
         if (err) return res.sendStatus(403)
         req.user = user
-
         next()
     })
 }
@@ -139,14 +137,25 @@ const auth_get = (req, res) => {
 const register_get = (req, res) => {
     res.render('register.ejs');
 }
+const userList = ["vulnlabAdmin"] // Registered users in real application they will use database.
 
 const register_post = (req, res) => {
     const username = req.body.username;
-    const email = req.body.username;
+    const email = req.body.email;
     const password = req.body.password;
-    const token = generateAccessToken(username);
-    res.cookie('authToken', token);
-    res.send(token);
+    // In real application they will use database to do the following check.
+    if (userList.includes(username)){
+        res.status(403).send("User already registerd!")
+    } else {
+        if (username !== '' & password !== '' & email !== '' ){
+            const token = generateAccessToken(username, email);
+            res.cookie('authToken', token);
+            res.send(token);
+        } else {
+            res.status(400).send("username, password and email can not be null");
+        }
+    }
+
 }
 
 const sitetoken_get = (req, res) => {
@@ -200,6 +209,23 @@ const ssti = (req, res) => {
     }));
 }
 
+const jwt1_get = (req, res) =>{
+    res.render('jwt1');
+}
+// user for BAC lab
+var apiKeyObject = { "vulnlabAdmin": "YouHaveCompletedTheExcercise" };
+
+const jwt1ApiKey = (req, res) => {
+    const username = req.user.username;
+    // in real application they will fetch this information from database.
+    if (!(username in apiKeyObject)){
+        res.send("8992f664e4829c4e4d5e477e0c619f5c");
+    } else {
+        
+        res.send(apiKeyObject.vulnlabAdmin);
+    }
+}
+
 module.exports = {
     app_index,
     xss_lab,
@@ -221,5 +247,7 @@ module.exports = {
     ssti,
     register_get,
     register_post,
+    jwt1_get,
+    jwt1ApiKey,
     logout_get
 }
