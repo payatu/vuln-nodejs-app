@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+
+    <div class='container' style='min-height: 450px'>
+        <h2>Notes</h2>
+        <p>Your goal is to access notes saved in <code>vulnlabAdmin</code> account</p>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Create Notes</h5>
+                        <p class="card-text">
+                        <p class="card-text"><input class="form-control" id="noteTitle" type="text" value=""></p>
+                        <p class="card-text"><textarea class="form-control" id="noteBody"></textarea></p>
+                        <input type="submit" value="Add" onclick="saveNote()" class="btn btn-primary">
+                       
+                        <p class="card-text"></p><div id='message'></div> </p>  
+                    </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Notes</h5>
+                             <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">id</th>
+                                    <th scope="col">title</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr id="root">
+                                  </tr>
+                                </tbody>
+                              </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <h4> Vulnerable Code:</h4>
+        <h5>
+            <div class="jumbotron">
+                <pre>
+const userNotes_get = (req, res)=> {
+    const username = req.params.username;
+    Notes.findAll({where:{username:username}})
+        .then((result)=>{
+        res.header("Content-Type", "application/json")
+        res.send(JSON.stringify(result));
+    })
+}
+                </pre>
+            </div>
+        </h5>
+        <script>
+            function saveNote() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        document.getElementById('message').innerHTML = `<div class="alert alert-success" role="alert">Note Saved!</div>`;
+                        loadNotes();  
+                    }
+                }
+                xhr.open('POST', window.location.origin + '/notes');
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                data = "noteTitle=" + noteTitle.value + "&noteBody=" + noteBody.value;
+                xhr.withCredentials = true;
+                xhr.send(data);
+            }
+
+            loadNotes();
+
+            function loadNotes(){
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    var data = JSON.parse(xhr.response);
+                    data.forEach(element=>root.insertAdjacentHTML('beforebegin', `<tr><td>${element.id}</td><td>${element.noteTitle}</td></tr>`)); 
+                    }
+                }
+                xhr.open('GET', window.location.href+"/<%=username%>");
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.withCredentials = true; 
+                xhr.send();
+            }
+
+        </script>
+            <!-- data.forEach(element=>root.insertAdjacentHTML('beforebegin', `<tr><td>${element.id}</td><td>${element.noteTitle}</td></tr>`)); -->
+                
+</body>
+
+</html>

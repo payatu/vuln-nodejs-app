@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <%- include ('includes/header.html') %>
+    <%- include ('includes/header.ejs') %>
 </head>
 
 <body>
@@ -37,7 +37,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">SQL Injection</h5>
-          <p class="card-text">Application is concatinating user supplied to SQL statement without any validation.</p>
+          <p class="card-text">Application is concatinating user supplied input to SQL statement without any validation.</p>
           <a href="/sqli" class="btn btn-primary">Exploit -&#x3e;</a>
         </div>
       </div>
@@ -87,9 +87,9 @@
     <div class="col-sm-6">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">LFI</h5>
-          <p class="card-text">Working On this</p>
-          <a href="/#" class="btn btn-primary">Exploit -&#x3e;</a>
+          <h5 class="card-title">IDOR</h5>
+          <p class="card-text">Application has functionality to store the notes, can you access the notes saved in <code>vulnlabAdmin</code> account.</p>
+          <a href="/notes" class="btn btn-primary">Exploit -&#x3e;</a>
         </div>
       </div>
     </div>

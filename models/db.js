@@ -11,11 +11,14 @@ sequelize
         console.log('Unable to connect to database', err)
     });
 
-const Train = sequelize.define('train', {'from_stnt': Sequelize.STRING, 
+const Train = sequelize.define('trains', {'from_stnt': Sequelize.STRING, 
     'to_stnt': Sequelize.STRING, 'ntrains': Sequelize.INTEGER});
 
 const Users = sequelize.define('users', {'username': Sequelize.STRING,
     'email': Sequelize.STRING, 'password': Sequelize.STRING})
+
+const Notes = sequelize.define('notes', {"username": Sequelize.STRING, "noteTitle": Sequelize.STRING,
+    "noteBody": Sequelize.STRING})
 
 sequelize.sync({force: true})
     .then(()=>{
@@ -25,13 +28,23 @@ sequelize.sync({force: true})
             {from_stnt: 'Delhi', to_stnt:'Lucknow', ntrains: 6},
             {from_stnt: 'Delhi', to_stnt:'Ahmedabad', ntrains: 5},
             {from_stnt: 'Delhi', to_stnt:'Chennai', ntrains: 3}
-        ]).then(()=>{
-            return Train.findAll();
-        }).then((train)=>{
-            console.log(train);
-        });
+        ]);
+        // Debug promise
+        // .then(()=>{
+        //     return Train.findAll();
+        // }).then((train)=>{
+        //     console.log(train);
+        // }); 
+        Users.create(
+            {username: 'vulnlabAdmin', email:'vulnlabAdmin@vuln.js', password: 'SuperSecurePassword'}
+        );
+        Notes.create(
+            {username:'vulnlabAdmin', noteTitle:'ThisIsAdminNote', noteBody:'SuperSecretNote'}
+        )   
     });
 
 module.exports = {
-    Train
+    Train,
+    Users,
+    Notes
 }

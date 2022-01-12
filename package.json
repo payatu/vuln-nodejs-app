@@ -5,6 +5,7 @@
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
     "libxmljs": "^0.19.7",
+    "md5": "^2.3.0",
     "mysql2": "^2.3.3",
     "node-serialize": "^0.0.4",
     "pg": "^8.7.1",

@@ -1,13 +1,13 @@
 var exec = require('child_process').exec;
 var execFile = require('child_process').execFile;
 var libxmljs = require('libxmljs');
-var jwt = require('jsonwebtoken');
-var db = require('../models/trains');
+var db = require('../models/db.js');
 var serialize = require('node-serialize');
 const mysql = require('mysql2');
-const { Train } = require('../models/trains');
+const { Train, Users, Notes } = require('../models/db.js');
 var env = require('../env.js');
 var ejs = require('ejs')
+
 
 var con = mysql.createConnection({
     host: env.mySQLHost,
@@ -15,28 +15,7 @@ var con = mysql.createConnection({
     database: env.mySQLDB,
     user: env.mySQLUser,
     password: env.mySQLPass
-  });
-
-var secret = "secret";
-
-function generateAccessToken(username, email) {
-    const payload = {"username": username};
-    return jwt.sign(payload, secret);
-}
-
-function authenticateToken(req, res, next) {
-    const token = req.cookies.authToken;
-    if (token == null) 
-        return res.redirect('/register')
-
-    jwt.verify(token, secret, (err, user) => {
-        console.log(err)
-
-        if (err) return res.sendStatus(403)
-        req.user = user
-        next()
-    })
-}
+});
 
 // route handling
 const app_index = (req, res) => {
@@ -92,7 +71,6 @@ const sqli_check_train_get = (req, res) => {
     const from = req.params.from;
     const to = req.params.to;
     const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
-    console.log(q);
     con.connect(function(err) {
         if (err) throw err;
         con.query(q, (err, results) => {
@@ -115,7 +93,6 @@ const fixed_sqli_check_train_get = (req, res) => {
         .catch(() => res.send('Internal error occured!'));
 }
 
-
 const xxe_get = (req, res) => {
     res.render('xxe', {
         comment: null
@@ -132,30 +109,6 @@ const xxe_comment = (req, res) => {
 
 const auth_get = (req, res) => {
     res.render('auth');
-}
-
-const register_get = (req, res) => {
-    res.render('register.ejs');
-}
-const userList = ["vulnlabAdmin"] // Registered users in real application they will use database.
-
-const register_post = (req, res) => {
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-    // In real application they will use database to do the following check.
-    if (userList.includes(username)){
-        res.status(403).send("User already registerd!")
-    } else {
-        if (username !== '' & password !== '' & email !== '' ){
-            const token = generateAccessToken(username, email);
-            res.cookie('authToken', token);
-            res.send(token);
-        } else {
-            res.status(400).send("username, password and email can not be null");
-        }
-    }
-
 }
 
 const sitetoken_get = (req, res) => {
@@ -179,10 +132,7 @@ const deserialization_get = (req, res) => {
     res.render('deserialization');
 }
 
-const logout_get = (req, res) => {
-    res.clearCookie('authToken', '')
-    res.redirect('/register');
-}
+
 const save_preference_post = (req, res) => {
     const preference = serialize.unserialize(req.cookies.preference)
     console.log(preference)
@@ -226,6 +176,33 @@ const jwt1ApiKey = (req, res) => {
     }
 }
 
+const notes_get = (req,res)=>{
+    res.render('notes', {
+        username: req.user.username
+    });
+}
+
+const notes_post = (req, res)=>{
+    const noteTitle = req.body.noteTitle;
+    const noteBody = req.body.noteBody;
+    const username = req.user.username;
+    Notes.create({username: username, noteTitle: noteTitle, noteBody: noteBody})
+        .then((note)=>{
+            res.send(JSON.stringify(note));
+        })
+}
+
+const userNotes_get = (req, res)=> {
+    const username = req.params.username;
+    Notes.findAll({where:{username:username}})
+        .then((result)=>{
+            res.header("Content-Type", "application/json")
+            res.send(JSON.stringify(result));
+        })
+}
+
+
+
 module.exports = {
     app_index,
     xss_lab,
@@ -238,16 +215,15 @@ module.exports = {
     sitetoken_get,
     dashboard_get,
     userinfo_get,
-    authenticateToken,
     sqli_check_train_get,
     fixed_sqli_check_train_get,
     sqli_fixed_get,
     deserialization_get,
     save_preference_post,
     ssti,
-    register_get,
-    register_post,
     jwt1_get,
     jwt1ApiKey,
-    logout_get
+    notes_get,
+    notes_post,
+    userNotes_get,
 }

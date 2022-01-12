@@ -4,7 +4,7 @@
   <html lang="en">
   
   <head>
-      <%- include ('includes/header.html') %>
+      <%- include ('includes/header.ejs') %>
   </head>
   
   <body>
@@ -52,7 +52,6 @@ const sqli_check_train_get = (req, res) => {
     const from = req.params.from;
     const to = req.params.to;
     const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
-    console.log(q);
     con.connect(function(err) {
         if (err) throw err;
         con.query(q, (err, results) => {

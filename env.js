@@ -5,5 +5,5 @@ module.exports = {
   mySQLPort: "3306",
   mySQLUser: "root",
   mySQLDB: "vuln_nodejs_app",
-  mySQLPass: "<you-password>"
+  mySQLPass: "secret"
 }
