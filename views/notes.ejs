@@ -35,7 +35,7 @@
                              <table class="table">
                                 <thead>
                                   <tr>
-                                    <th scope="col">id</th>
+                                        <th scope="col">id</th>
                                     <th scope="col">title</th>
                                   </tr>
                                 </thead>
@@ -51,8 +51,7 @@
         <br><br>
         <h4> Vulnerable Code:</h4>
         <h5>
-            <div class="jumbotron">
-                <pre>
+            <pre class="prettyprint">
 const userNotes_get = (req, res)=> {
     const username = req.params.username;
     Notes.findAll({where:{username:username}})
@@ -62,7 +61,6 @@ const userNotes_get = (req, res)=> {
     })
 }
                 </pre>
-            </div>
         </h5>
         <script>
             function saveNote() {
@@ -97,7 +95,6 @@ const userNotes_get = (req, res)=> {
             }
 
         </script>
-            <!-- data.forEach(element=>root.insertAdjacentHTML('beforebegin', `<tr><td>${element.id}</td><td>${element.noteTitle}</td></tr>`)); -->
                 
 </body>
 

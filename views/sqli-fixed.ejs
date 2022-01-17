@@ -46,8 +46,7 @@
         Fixed Code:
     </h3>
     <h5>
-        <div class="jumbotron">
-            <pre>
+        <pre class="prettyprint">
 router.get('/sqli-fixed/:from-:to', vuln_handler.fixed_sqli_check_train_get);
 ...
 const fixed_sqli_check_train_get = (req, res) => {
@@ -57,7 +56,6 @@ const fixed_sqli_check_train_get = (req, res) => {
     .catch(()=>res.send('Internal error occured!'));
 }
 </pre>
-</div>
 </h5>
 </body>
 

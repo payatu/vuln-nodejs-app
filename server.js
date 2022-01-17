@@ -7,9 +7,10 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
-app.use(xssFilter());
+app.use(express.json());
 
 app.use(router);
+app.use(express.static('./assets'))
 
 app.set('view engine', 'ejs');
 

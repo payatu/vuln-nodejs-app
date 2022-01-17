@@ -12,7 +12,7 @@
     <div class='container' style='min-height: 450px'>
         <h2>JWT Weak Secret</h2>
         <br>
-        <p>Your goal is to access API Key of username: <code class="highlighter-rouge">vulnlabAdmin</code></p>
+        <p>Application is using weak secret to create JWT that can lead to authentication bypass. Your goal is to access API Key of username: <code class="highlighter-rouge">vulnlabAdmin</code></p>
         <div class="card" style="width: 50%">
             <div class="card-body">
                 <h5 class="card-title">API Token</h5>
@@ -24,8 +24,7 @@
         <br><br>
         <h4> Vulnerable Code:</h4>
         <h5>
-            <div class="jumbotron">
-                <pre>
+            <pre class="prettyprint">
 var secret = "secret";
 
 function generateAccessToken(username, email) {
@@ -33,7 +32,6 @@ function generateAccessToken(username, email) {
     return jwt.sign(payload, secret);
 }
                 </pre>
-            </div>
         </h5>
         <script>
             function getToken() {

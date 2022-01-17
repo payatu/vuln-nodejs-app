@@ -60,4 +60,39 @@ router.route('/login')
     .get(auth_controller.login_get)
     .post(auth_controller.login_post);
 
+router.get('/ticket', auth_controller.authenticateToken, vuln_handler.ticket_get);
+
+router.get('/ticket/booking', auth_controller.authenticateToken, vuln_handler.ticket_booking_get);
+
+router.get('/ticket/generate_ticket', vuln_handler.generate_ticket_get);
+
+router.get('/user-edit', auth_controller.authenticateToken, vuln_handler.user_edit_get);
+
+router.route('/edit-password')
+    .get(auth_controller.authenticateToken, vuln_handler.edit_password_get)
+    .post(auth_controller.authenticateToken, vuln_handler.edit_password_post)
+
+router.route('/organization')
+    .get(auth_controller.authenticateToken, vuln_handler.organization_get)
+    .post(auth_controller.authenticateToken, vuln_handler.organization_post);
+
+router.route('/organization/add-user')
+    .get(auth_controller.authenticateToken, vuln_handler.add_user_get)
+    .post(auth_controller.authenticateToken, vuln_handler.add_user_post);
+
+router.get('/organization/myorg', auth_controller.authenticateToken, vuln_handler.myorg_get);
+
+router.get('/organization/myorg/users', auth_controller.authenticateToken, vuln_handler.myorg_users_get);
+
+router.get('/api-token', auth_controller.authenticateToken, vuln_handler.apitoken_get);
+
+router.get('/api-token/show', auth_controller.authenticateToken, vuln_handler.apitokenShow_get);
+
+router.get('/cors-api-token', auth_controller.authenticateToken, vuln_handler.cors_api_token_get);
+
+router.route('/cors-csrf-edit-password')
+    .get(auth_controller.authenticateToken, vuln_handler.cors_csrf_edit_password_get)
+    .post(auth_controller.authenticateToken, vuln_handler.cors_csrf_edit_password_post)
+    .options(vuln_handler.cors_csrf_edit_password_option);
+
 module.exports = router;

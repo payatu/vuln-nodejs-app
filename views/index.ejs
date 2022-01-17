@@ -94,6 +94,71 @@
       </div>
     </div>
   </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">SSRF via PDF generator</h5>
+          <p class="card-text">Application is using html-pdf-node to generate ticket pdf your goal is to acheive the SSRF</p>
+          <a href="/ticket" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Web Message XSS </h5>
+          <p class="card-text">Application has functionality to update password, which opens a new window and listens for the post message can you exploit it?</p>
+          <a href="/user-edit" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Web Message CSRF</h5>
+          <p class="card-text">Application has functionality to add users in organization, your goal is to add your self in a victim organization by exploiting web messages.</p>
+          <a href="/organization" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Web Message Information Disclosure</h5>
+          <p class="card-text">Can you steal the user API token by exploiting Web Message.</p>
+          <br>
+          <a href="/api-token" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">CORS Information Disclosure</h5>
+          <p class="card-text">Steal the user API token by exploiting CORS.</p><br>
+          <a href="/cors-api-token" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">CORS CSRF</h5>
+          <p class="card-text">Application has insecure CORS implementation, your goal is to change user password by exploiting CORS.</p>
+          <a href="cors-csrf-edit-password" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
 </body>
 </title>
 </html>

@@ -20,15 +20,15 @@
                 </td>
             </tr>
             <tr>
-                <td> Nike <input type="checkbox" id="brand1" name="brand" value="Nike"> </td>
-                <td> Asics <input type="checkbox" id="brand2" name="brand" value="Asics"> </td>
+                <td> Nike <input type="checkbox" id="Nike" name="brand" value="Nike"> </td>
+                <td> Asics <input type="checkbox" id="Asics" name="brand" value="Asics"> </td>
             </tr>
             <tr>
-                <td> Puma <input type="checkbox" id="brand3" name="brand" value="Puma"> </td>
-                <td> Reebok <input type="checkbox" id="brand4" name="brand" value="Reebok"> </td>
+                <td> Puma <input type="checkbox" id="Puma" name="brand" value="Puma"> </td>
+                <td> Reebok <input type="checkbox" id="Reebok" name="brand" value="Reebok"> </td>
             </tr>
             <tr>
-                <td> Jordan <input type="checkbox" id="brand5" name="brand" value="Jordan"> </td>
+                <td> Jordan <input type="checkbox" id="Jordan" name="brand" value="Jordan"> </td>
                 <br> <br>
             <tr>
                 <td>
@@ -36,17 +36,29 @@
                 </td>
             </tr>
             <tr>
-                <td> Black <input type="checkbox" id="color1" name="color" value="Black"> </td>
-                <td> Brown <input type="checkbox" id="color2" name="color" value="Brown"> </td>
+                <td> Black <input type="checkbox" id="Black" name="color" value="Black"> </td>
+                <td> Brown <input type="checkbox" id="Brown" name="color" value="Brown"> </td>
             </tr>
             <tr>
-                <td> Blue <input type="checkbox" id="color3" name="color" value="Blue"> </td>
-                <td> White <input type="checkbox" id="color4" name="color" value="White"> </td>
+                <td> Blue <input type="checkbox" id="Blue" name="color" value="Blue"> </td>
+                <td> White <input type="checkbox" id="White" name="color" value="White"> </td>
             </tr>
             <tr>
                 <br> <br>
-                <button id="btn">Submit</button> <br><br>
+                <input type="button" id="btn" value="Submit"><br><br>
                 <h4 style="color:green" id="result"></h4>
+                <br>
+                <h5> Vulnerable Code:</h5>
+<h5>
+    <br>
+<pre class="prettyprint">
+
+  var serialize = require('node-serialize');
+  ....  
+  const preference = serialize.unserialize(req.cookies.preference);
+
+</pre>
+</h5>
 
                 <script>
                     document.getElementById('btn').onclick = function () {

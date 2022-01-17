@@ -1,10 +1,12 @@
-var jwt = require('jsonwebtoken');
-var secret = "secret";
-var md5 = require('md5');
-var { Users } = require('../models/db')
+const jwt = require('jsonwebtoken');
+const secret = "secret";
+const md5 = require('md5');
+const crypto = require('crypto')
+const { Users, Org } = require('../models/db')
+const emailvalidator = require("email-validator");
 
-function generateAccessToken(username, email) {
-    const payload = { "username": username };
+function generateAccessToken(username) {
+    const payload = { "username": username};
     return jwt.sign(payload, secret);
 }
 
@@ -15,16 +17,16 @@ function authenticateToken(req, res, next) {
 
     jwt.verify(token, secret, (err, user) => {
         if (err) return res.sendStatus(403)
-        req.user = user
-        Users.findAll({ where: { username: req.user.username } })
-        .then((count) => {
-            if (count.length == 0) {
+        Users.findOne({attributes: ['username', 'email', 'orgname', 'apiToken'], where: { username: user.username } })
+        .then((queryResult) => {
+            if (queryResult == null){
                 res.clearCookie('authToken', '')
                 res.redirect('/login');
             } else {
+                req.user = queryResult
                 next()
             }
-        })       
+        }) 
     })
 }
 
@@ -32,25 +34,25 @@ const register_get = (req, res) => {
     res.render('register.ejs');
 }
 
-const userList = ["vulnlabAdmin"] // Registered users in real application they will use database.
-
 const register_post = (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-    // In real application they will use database to do the following check.
+    if(!emailvalidator.validate(email)){res.send(res.status(400).send("Invalid email"))}
     Users.findAll({ where: { username: username } })
         .then((count) => {
             if (count.length != 0) {
                 res.status(403).send("User already registerd!")
-            } else {
+            } else {  
                 if (username !== '' & password !== '' & email !== '') {
-                    Users.create({ username: username, email: email, password: md5(password) });
+                    const apiToken = crypto.randomBytes(20).toString('hex');
+                    Users.create({ username: username, email: email, password: md5(password), orgname:'', apiToken: apiToken });
+                    Org.create({orgname:'', owner:username})
                     const token = generateAccessToken(username, email);
                     res.cookie('authToken', token);
                     res.send(token);
                 } else {
-                    res.status(400).send("username, password and email can not be null");
+                    res.status(400).send("username/password/email can not be null");
                 }
             }
         })

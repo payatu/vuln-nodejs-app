@@ -14,8 +14,8 @@
 <br>
 <p> Application is using <code class="highlighter-rouge">libxmljs</code> for parsing xml which allows parsing of external entities if  <code class="highlighter-rouge">noent</code> flag is set to  <code class="highlighter-rouge">true</code>.</p>
 <h5> Vulnerable Code:</h5>
-<div class="jumbotron">
-<pre>
+<h5>
+<pre class="prettyprint">
   var libxmljs = require('libxmljs');
   ....
   const rawcomment = req.body.comment;
@@ -23,8 +23,7 @@
   var comment = parsecomment.get('//content');
   comment = comment.text();
   res.send(comment)
-</pre>
-</div>
+</pre></h5>
 <h3>Comment</h3>
 <h5> Your Comment:</h5>
 <pre id="user-comment">

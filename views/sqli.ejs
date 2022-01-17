@@ -14,7 +14,7 @@
     <input type="text" id="val1" value="Delhi" readonly> <br><br>To<br><br>
     <select name="Cars" id="val2" size="5">
         <option value="Kolkata"> kolkata </option>
-        <option value="Mumabi"> Mumbai </option>
+        <option value="Mumbai"> Mumbai </option>
         <option value="Lucknow"> Lucknow </option>
         <option value="Chennai"> Chennai </option>
         <option value="Ahmedabad"> Ahmedabad </option>
@@ -44,8 +44,7 @@
     </h4>
     <br>
     <h5>
-        <div class="jumbotron">
-        <pre>
+        <pre class="prettyprint">
 router.get('/sqli/:from-:to', vuln_handler.sqli_check_train_get);
 ...
 const sqli_check_train_get = (req, res) => {
@@ -63,7 +62,7 @@ const sqli_check_train_get = (req, res) => {
     });
 }
 </pre>
-</div>
+    </h5>
 </h3>
 Vulnerability is arising because application code is not validating user    supplied input before concatinating it into the SQL query which leads to sql injection. Instead of 
 directly adding user supplied input to sql query use prepared statements to protect agains sql injection

@@ -52,7 +52,7 @@
                                             </div>`;
                                     } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 400) {
                                         document.getElementById('register-error').innerHTML = `<div class="alert alert-danger" role="alert">
-                                            username/password/email can not be null!
+                                            ${xhr.responseText}
                                             </div>`
                                     }
                                 }
