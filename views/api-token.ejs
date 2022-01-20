@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>Web Messages III</h2>
+        <br>
+        <p>Your goal is to steal the API token by exploiting web messages.</p>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h5 class="card-title">API Token</h5>
+                <p class="card-text"><input class="form-control" id="apiToken" type="text" value=""
+                        placeholder="*************" readonly></p>
+                <input type="submit" value="Show" onclick="window.open('api-token/show','popup', 'width=300,height=300')" class="btn btn-primary">
+            </div>
+        </div>
+        <br><br>
+        <h4> Vulnerable Code:</h4>
+        <p>filename: <code>/views/api-token-popup.ejs</code></p>
+        <h5>
+            <pre class="prettyprint">
+
+ var token = "&#x3c;%-apiToken%&#x3e;";
+ window.opener.postMessage({'token':token}, '*')
+ window.close()
+                </pre>
+        </h5>
+        <script>
+window.addEventListener("message", function(event){
+    document.getElementById('apiToken').value = event.data.token;
+})
+        </script>
+</body>
+
+</html>

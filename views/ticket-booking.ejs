@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <section id="informations">
+      <h1 id="name" style="font-size: 3rem;">Train Ticket</h1>
+      <h3 id="destination" style="font-size: 2.5rem;"> <%-from_stnt%> ✈ <%-to_stnt%></h3>
+      <ul style="font-size: 2rem;">
+        <li>Passenger Name: <%-passenger%></li>
+        <li>Time: 5:10pm</li>
+        <li>Date: <%-date%></li>
+        <li>Coach: AC 1</li>
+        <li>Train no: 13306</li>
+      </ul>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.ejs') %>      
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
+<h2> Command Injection:</h2> <p> User supplied input directly passed to exec function without santization.</p>
+<h5> Vulnerable Code:</h5>
+<h5>
+<pre class="prettyprint">
+
+  const exec = require('child_process').exec
+  ....  
+  const ping = req.body.ping;
+  exec('ping -c 3 ' + req.body.ping, function (err, stdout, stderr){
+    output = stdout + stderr;
+    console.log(output)
+    res.render('ping', {
+      output: output
+    });
+  })
+
+</pre>
+</h5>
+<form action="/ping" method="POST">
+  <input type="text" name="ping" placeholder="google.com">
+  <input type="submit" value="ping">
+</form>
+<% if (output) { %>
+  <br>
+<p> Command Output </p>
+<pre>
+<%= output %>
+</pre>
+<% } %>
+</h3>
+<br>
+<h3>Fixed version</h3>
+<p> In this version application uses `execFile` function from the `child_process` module that starts a specific program
+and takes an array of arguments.
+<h5> Fixed Code</h5>
+<h5>
+    <pre class="prettyprint">
+
+  const execFile = require('child_process').execFile;
+  ...
+  execFile('/usr/bin/ping', ['-c', '3', ping1], function (err, stdout, stderr){
+    pingoutput = stdout + stderr;
+    res.render('ping', {
+      pingoutput: pingoutput,
+      output: null
+    });
+  });
+
+</pre>
+<form action="/ping" method="POST">
+  <input type="text" name="ping1">
+  <input type="submit" value="ping1">
+</form>
+<br>
+<% if (pingoutput) { %>
+<p> Command Output </p>
+<pre>
+<%= pingoutput %>
+</pre>
+<% } %>
+</h5>
+</body>
+</html>
+

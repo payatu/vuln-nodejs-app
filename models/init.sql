@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS vuln_nodejs_lab;

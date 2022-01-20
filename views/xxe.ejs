@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <!doctype html>
+  <html lang="en">
+  
+  <head>
+      <%- include ('includes/header.ejs') %>
+  </head>
+  
+  <body>
+      <%- include ('includes/navigation.ejs') %>
+      <div class='container' style='min-height: 450px'>
+<h3> XXE Lab</h3>
+<br>
+<p> Application is using <code class="highlighter-rouge">libxmljs</code> for parsing xml which allows parsing of external entities if  <code class="highlighter-rouge">noent</code> flag is set to  <code class="highlighter-rouge">true</code>.</p>
+<h5> Vulnerable Code:</h5>
+<h5>
+<pre class="prettyprint">
+  var libxmljs = require('libxmljs');
+  ....
+  const rawcomment = req.body.comment;
+  const parsecomment = libxmljs.parseXmlString(rawcomment, {noent: true,noblanks:true}); // Vuln: noent is set to true
+  var comment = parsecomment.get('//content');
+  comment = comment.text();
+  res.send(comment)
+</pre></h5>
+<h3>Comment</h3>
+<h5> Your Comment:</h5>
+<pre id="user-comment">
+</pre>
+<textarea id="comment" rows="8" cols="50"></textarea>
+<br><br>
+<input type="button" id="postcomment" value="post" onclick="postcomment()">
+<div id="comment-div" hidden="true">
+
+</h5> 
+</div>
+<script>
+function postcomment(){
+  var comment = document.getElementById('comment').value
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      var res = xhr.responseText;
+      document.getElementById("comment-div").removeAttribute("hidden");
+      document.getElementById("user-comment").innerHTML = res;
+    }
+  }
+  data = 'comment=<?xml version="1.0" encoding="UTF-8"?><root><comment><content>'+comment+'</content></comment></root>'
+  xhr.open('POST', window.location.origin+'/comment', true); 
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.withCredentials = true; 
+  xhr.send(data);
+}
+</script>
+</body>
+</html>

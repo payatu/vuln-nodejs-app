@@ -1,0 +1,49 @@
+services:
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysqldb
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    volumes:
+      - ./models/init.sql:/docker-entrypoint-initdb.d/0_init.sql
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    expose:
+      - ${DB_PORT}
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      SERVICE_TAGS: prod
+      SERVICE_NAME: mysqldb
+    networks:
+      - internalnet
+
+  nodeapp:
+    container_name: vuln_nodejs_app
+    build: .
+    image: payatu/vuln_nodejs_app
+    volumes:
+      - .:/code
+    ports:
+      - ${HOST_PORT}:${HOST_PORT}
+    expose:
+      - ${HOST_PORT}
+    environment:
+      HOST_PORT: ${HOST_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_HOST: mysqldb
+      DB_PORT: ${DB_PORT}
+      SERVICE_TAGS: prod
+      SERVICE_NAME: nodeappservice
+    depends_on:
+      - mysqldb
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge

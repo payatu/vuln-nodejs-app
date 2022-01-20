@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <div class='container' style='min-height: 450px'>
+<br>
+        <div class="card" style="width: 80%">
+            <div class="card-body">
+                <h5 class="card-title">Add user in your org</h5>
+                <p class="card-text">  <div class="form-group">
+                    <label for="exampleFormControlSelect1">Users:</label>
+                    <select class="form-control" id="users">
+                    </select>
+                  </div>
+                <p class="card-text"> <input type="button" onclick="addUser()" class="btn btn-primary" value="Add"></p>
+            </div>
+        </div>
+        <script>
+            function addUser(){
+                var selectedUser = document.getElementById("users").value
+                window.opener.postMessage(selectedUser, '*');
+                window.close();
+            }
+
+
+            var users = <%-JSON.stringify(users);%>;
+            var usersElment = document.getElementById('users');
+            users.forEach((user)=>{
+                var el = document.createElement('option');
+                el.value = user.username;
+                el.innerHTML = user.username;
+                usersElment.appendChild(el)
+            })
+            
+        </script>
+</body>
+
+</html>

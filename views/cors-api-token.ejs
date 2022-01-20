@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>CORS Information Disclosure</h2>
+        <br>
+        <p>Your goal is to steal the API token by exploiting CORS.</p>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h5 class="card-title">API Token</h5>
+                <p class="card-text"><input class="form-control" id="apiToken" type="text" value="<%=apiToken%>"></p>
+            </div>
+        </div>
+        <br><br>
+        <h4> Vulnerable Code:</h4>
+        <p>filename: <code>/views/cors-api-token.ejs</code></p>
+        <h5>
+            <pre class="prettyprint">
+
+ const cors_api_token_get = (req, res) =&#x3e; {
+    const apiToken = req.user.apiToken;
+    if (req.get('origin') !== undefined){
+        res.header("Access-Control-Allow-Origin", req.get('origin'));
+        res.header("Access-Control-Allow-Credentials", 'true');
+    }
+    res.render('cors-api-token', {apiToken})
+ }
+                </pre>
+        </h5>
+</body>
+
+</html>
