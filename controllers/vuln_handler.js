@@ -244,7 +244,7 @@ const user_edit_get = (req, res) => {
 }
 
 const edit_password_post = (req, res) => {
-    Users.update({ password: md5(req.password) }, { where: { username: req.user.username } })
+    Users.update({ password: md5(req.body.password) }, { where: { username: req.user.username } })
         .then((queryResults) => {
             res.send("Password update Successfull!");
         })
