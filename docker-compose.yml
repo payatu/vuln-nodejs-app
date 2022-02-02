@@ -39,6 +39,7 @@ services:
       DB_PORT: ${DB_PORT}
       SERVICE_TAGS: prod
       SERVICE_NAME: nodeappservice
+      JWT_SECRET: secret
     depends_on:
       - mysqldb
     networks:

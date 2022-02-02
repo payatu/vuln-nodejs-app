@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>Cross-Site WebSocket Hijacking</h2>
+        <br>
+        <p>Application is using old version of socket.io to show USD value of user crypto wallet, your goal is to
+            steal the wallet balance information.
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h4 class="card-title">Your Wallet</h4>
+                <p class="card-text">
+                <h5 style="display: inline;">Total Value:</h5> <b><span id="total_value"
+                        style="font-size: 14px"></span></b><br><br>
+                <img src="/images/Bitcoin-BTC-icon.png"> Bitcoin: <b><span id="bitcoin_usd_value"
+                        style="font-size: 14px"></span></b>
+                <br><sup><b> <%= BTC %></b></sup><br>
+                <img src="/images/Ethereum-ETH-icon.png"> Ethereum: <b><span id="ethereum_usd_value"
+                        style="font-size: 14px"></span></b>
+                <br><sup><b> <%= ETH %></b></sup><br>
+                </p>
+            </div>
+        </div>
+        <br><br>
+        <script>
+            window.onload = function () {
+                var socket = io.connect(document.location.origin);
+                function fetchWalletBalance() {
+                    socket.emit('crypto_usd_value')
+                    setTimeout(fetchWalletBalance, 5000);
+                }
+                fetchWalletBalance();
+
+                socket.on('crypto_usd_value', data => {
+                    document.getElementById('total_value').innerHTML = "$" + data.total.toFixed(2);
+                    document.getElementById('bitcoin_usd_value').innerHTML = "$" + data.btc.toFixed(2);
+                    document.getElementById('ethereum_usd_value').innerHTML = "$" + data.eth.toFixed(2);
+                })
+            }
+        </script>
+</body>
+
+</html>

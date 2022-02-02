@@ -4,11 +4,12 @@ var libxmljs = require('libxmljs');
 var db = require('../models/db.js');
 var serialize = require('node-serialize');
 const mysql = require('mysql2');
-const { Train, Users, Notes, Org } = require('../models/db.js');
+const { Train, Users, Notes, Org, Wallet } = require('../models/db.js');
 var ejs = require('ejs');
 var html_to_pdf = require('html-pdf-node');
-const { Op } = require('sequelize')
+const { Op, and } = require('sequelize')
 const md5 = require('md5');
+const twofactor = require('node-2fa')
 
 var con = mysql.createConnection({
     database: process.env.DB_NAME,
@@ -246,7 +247,7 @@ const user_edit_get = (req, res) => {
 const edit_password_post = (req, res) => {
     Users.update({ password: md5(req.body.password) }, { where: { username: req.user.username } })
         .then((queryResults) => {
-            res.send("Password update Successfull!");
+            res.send("Password updated!");
         })
         .catch((err) => {
             res.send('Unexpected error occured');
@@ -390,6 +391,93 @@ const cors_csrf_edit_password_option = (req, res) => {
     res.send(200);
 }
 
+const tmp_totpSecret = {}
+const totp_setup_get = (req, res) => {
+    if (req.user.totpSecret == '') {
+        const newSecret = twofactor.generateSecret({ name: "vuln-nodejs-app", account: req.user.email });
+        tmp_totpSecret[req.user.username] = newSecret.secret;
+        console.log(tmp_totpSecret)
+        res.render('totp', {
+            qr: newSecret.qr
+        })
+    } else {
+        const qr = ''
+        res.render('totp', {
+            qr
+        })
+    }
+
+}
+
+const totp_setup_post = (req, res) => {
+    const username = req.user.username;
+    if (!(username in tmp_totpSecret)) {
+        res.status(400).send("Unauthorized")
+    } else {
+        const verification_Token = twofactor.generateToken(tmp_totpSecret[username]);
+        console.log(verification_Token)
+        const verify = twofactor.verifyToken(tmp_totpSecret[username], req.body.totp_verify)
+        if (verify != null) {
+            if (verify.delta == '0') {
+                Users.update({ totpSecret: tmp_totpSecret[username] }, { where: { username: username } })
+                    .then((result) => {
+                        if (result.length == 1) {
+                            res.send("2fa verfied! Logout & try to bypasss it");
+                        }
+                    })
+            }
+        } else {
+            res.status(400).send("Verification failed!, Try again.")
+        }
+    }
+}
+
+const login_totp_verification_get = (req, res) => {
+    res.render('login_totp_verification')
+}
+
+const login_totp_verification_post = (req, res) => {
+    if (req.user.totpSecret != '' || req.body.totp_code != '' || req.body.totp_code != null || req.body.totp_code == undefined) {
+        const verify = twofactor.verifyToken(req.user.totpSecret, req.body.totp_code)
+        if (verify != null) {
+            if (verify.delta == '0') {
+                res.send("/")
+            }
+        } else {
+            res.status(403).send("Verification failed!, Try again.")
+        }
+    }
+}
+
+const totp_disable_post = (req, res) => {
+    const totp_disable_code = req.body.totp_disable;
+    if (req.user.totpSecret === '') return res.status(403).send("TOTP is not enabled for this user");
+    const verify = twofactor.verifyToken(req.user.totpSecret, totp_disable_code);
+    if (verify === null) return res.status(403).send('Invalid code, Try again!')
+    if (verify.delta == '0') {
+        Users.update({ totpSecret: '' }, { where: { username: req.user.username } })
+            .then((result) => {
+                if (result.length == 1) {
+                    res.send("2FA Disabled");
+                }
+                else {
+                    res.status(403).send('Internal error, Try again!');
+                }
+            })
+    } else {
+        res.status(403).send('TOTP code expired!');
+    }
+}
+
+const websocket_hijacking_get = (req, res)=> {
+    Wallet.findOne({where:{username: req.user.username}}, {attributes:['BTC', 'ETH']})
+    .then((crypto_balance)=>{
+        res.render('cross-site-websocket-hijacking',{
+            BTC: crypto_balance.BTC,
+            ETH: crypto_balance.ETH
+        });  
+    })
+}
 
 module.exports = {
     app_index,
@@ -431,5 +519,11 @@ module.exports = {
     cors_api_token_get,
     cors_csrf_edit_password_get,
     cors_csrf_edit_password_post,
-    cors_csrf_edit_password_option
+    cors_csrf_edit_password_option,
+    totp_setup_get,
+    totp_setup_post,
+    login_totp_verification_get,
+    login_totp_verification_post,
+    totp_disable_post,
+    websocket_hijacking_get
 }

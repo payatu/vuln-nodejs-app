@@ -12,8 +12,11 @@
       <div class='container' style='min-height: 450px'>
     <h2>Vulnerability: Insecure Deserialisation</h3>
         <br>
-            <h3> Shoe preference </h3>
-            <br>
+        <p>Application is using node-serialize method unserialize to parse the preference cookie, your goal is to acheive the RCE.</p>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h4 class="card-title">Shoe preference</h4>
+                <p class="card-text">
             <tr>
                 <td>
                     Brand:
@@ -29,7 +32,7 @@
             </tr>
             <tr>
                 <td> Jordan <input type="checkbox" id="Jordan" name="brand" value="Jordan"> </td>
-                <br> <br>
+                <br> 
             <tr>
                 <td>
                     Color:
@@ -45,9 +48,11 @@
             </tr>
             <tr>
                 <br> <br>
-                <input type="button" id="btn" value="Submit"><br><br>
-                <h4 style="color:green" id="result"></h4>
-                <br>
+                <input type="button" id="btn" value="Submit">
+                <div class="alert alert-success" role="alert" id="message" hidden></div>
+            </div>
+        </div>
+        <br>
                 <h5> Vulnerable Code:</h5>
 <h5>
     <br>
@@ -89,7 +94,8 @@
                         var xhr = new XMLHttpRequest();
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                                document.getElementById('result').innerHTML = "Preference updated!";
+                                document.getElementById('message').removeAttribute('hidden');
+                                document.getElementById('message').innerHTML = 'Preference updated!'
                             }
                         }
                         xhr.open('POST', window.location.origin+'/save-preference', true);

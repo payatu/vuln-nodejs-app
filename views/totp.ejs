@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>Account Security</h2>
+        <br>
+        <p>Your goal is to bypass the 2FA authentication check during login.</p>
+        <div class="card" style="width: 50%">
+
+            <div class="card-body">
+                <% if (qr != ''){%>
+                <h5 class="card-title">Scan barcode using authenticator app</h5>
+                <img src="<%=qr%>">
+                <input type="text" id="totp_verify" placeholder="verify">
+                <input type="submit" name="submit" value="Verify" onclick="verify()">
+                <%} else {%>
+                    <h5 class="card-title">Disable 2FA</h5>
+                    <input type="text" id="totp_disable" placeholder="TOTP code">
+                    <input type="submit" name="submit" value="Disbale" onclick="disable_totp()">
+                <% } %>
+            </div>
+        </div>
+        <br>
+        <script>
+            totp_verify.value = '';
+            function verify() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        alert(xhr.responseText);
+                        window.location = document.location;
+                    }
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 400){
+                        alert(xhr.responseText);
+                        totp_verify.value = '';
+                    }
+                }
+                xhr.open('POST', `${window.location.origin}/setup-totp`, true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+                xhr.withCredentials = true;
+                xhr.send(`totp_verify=${totp_verify.value}`);
+            }
+            function disable_totp(){
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        alert(xhr.responseText);
+                        window.location = document.location;
+                    }
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 400){
+                        alert(xhr.responseText);
+                        totp_disable.value = '';
+                    }
+                }
+                xhr.open('POST', `${window.location.origin}/disable-totp`, true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+                xhr.withCredentials = true;
+                xhr.send(`totp_disable=${totp_disable.value}`);
+            }
+        </script>
+</body>
+
+</html>

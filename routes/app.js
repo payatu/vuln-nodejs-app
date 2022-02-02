@@ -44,8 +44,6 @@ router.post('/save-preference', auth_controller.authenticateToken, vuln_handler.
 
 router.get('/ssti', auth_controller.authenticateToken, vuln_handler.ssti);
 
-router.get('/logout', auth_controller.authenticateToken, auth_controller.logout_get);
-
 router.get('/jwt1', auth_controller.authenticateToken, vuln_handler.jwt1_get);
 
 router.get('/jwt1/apiKey', auth_controller.authenticateToken, vuln_handler.jwt1ApiKey);
@@ -95,4 +93,15 @@ router.route('/cors-csrf-edit-password')
     .post(auth_controller.authenticateToken, vuln_handler.cors_csrf_edit_password_post)
     .options(vuln_handler.cors_csrf_edit_password_option);
 
+router.route('/setup-totp')
+    .get(auth_controller.authenticateToken, vuln_handler.totp_setup_get)
+    .post(auth_controller.authenticateToken, vuln_handler.totp_setup_post);
+
+router.route('/totp-verification')
+    .get(auth_controller.authenticateToken, vuln_handler.login_totp_verification_get)
+    .post(auth_controller.authenticateToken, vuln_handler.login_totp_verification_post);
+
+router.post('/disable-totp', auth_controller.authenticateToken, vuln_handler.totp_disable_post);
+
+router.get('/cross-site-websocket-hijacking', auth_controller.authenticateToken, vuln_handler.websocket_hijacking_get);
 module.exports = router;

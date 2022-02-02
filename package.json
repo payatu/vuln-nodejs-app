@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cookie": "^0.4.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^14.2.0",
     "ejs": "^3.1.6",
@@ -10,9 +11,12 @@
     "libxmljs": "^0.19.7",
     "md5": "^2.3.0",
     "mysql2": "^2.3.3",
+    "node-2fa": "^2.0.3",
     "node-serialize": "^0.0.4",
     "pg": "^8.7.1",
+    "request": "^2.88.2",
     "sequelize": "^6.12.5",
+    "socket.io": "2.3.0",
     "x-xss-protection": "^2.0.0"
   },
   "scripts": {

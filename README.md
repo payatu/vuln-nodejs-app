@@ -6,7 +6,29 @@
 
 ## Installation
 
-1. Download
+### Using docker-compose 
+
+1. Download the repository.
+
+```bash
+git clone https://github.com/tauh33dkhan/vuln-nodejs-app.git
+cd ./vuln-nodejs-app
+```
+2. Download and build the image.
+
+```bash
+docker-compose up --build -d
+```
+
+3. Start the application.
+```
+docker-compose up -d  # Remove -d flag if you want to see logs
+```
+access the application http://localhost:9000
+
+### Manual install
+
+1. Download the repository.
 
 ```bash
 git clone https://github.com/tauh33dkhan/vuln-nodejs-app.git
@@ -22,18 +44,15 @@ mysql> create database vuln_nodejs_app;
 
 ```
 
-3. Update your mysql username and password inside **env.js** file.
+3. Update your mysql username and password inside **.env** file.
 
 ```html
-module.exports = {
-  listen: "0.0.0.0",
-  port:	  "9000",
-  mySQLHost: "0.0.0.0",
-  mySQLPort: "3306",
-  mySQLUser: "root",
-  mySQLDB: "vuln_nodejs_app",
-  mySQLPass: "<your-password>"
-}
+DB_PORT=3306
+DB_NAME=vuln_nodejs_app
+DB_USER=vuln_nodejs_user
+DB_PASS=passw0rd
+HOST_PORT=9000
+
 ```
 
 4. Install the dependencies.
@@ -47,11 +66,11 @@ npm install
 ```bash
 node server.js
 ```
+access the application http://localhost:9000
 
 ## TODO:
 
-* Dockerize the application.
+* <s>Dockerize the application</s>.
 * Add more vulnerabilites.
-* Use database to store user information.
-* Support both mysql and postgresql server for local installation.
+* <s>Use database to store user information</s>.
 

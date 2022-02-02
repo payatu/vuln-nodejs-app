@@ -38,7 +38,7 @@
                                 var xhr = new XMLHttpRequest();
                                 xhr.onreadystatechange = function () {
                                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                                        window.location = '/';
+                                        window.location = xhr.responseText;
                                     } else if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 403){
                                         document.getElementById('login-error').innerHTML = `<div class="alert alert-danger" role="alert">
                                             Incorrect username/password!

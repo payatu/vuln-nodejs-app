@@ -28,7 +28,8 @@ const Train = sequelize.define('trains', {
 const Users = sequelize.define('users', {
     'username': Sequelize.STRING,
     'email': Sequelize.STRING, 'password': Sequelize.STRING, 'orgname': Sequelize.STRING,
-    'apiToken': Sequelize.STRING
+    'apiToken': Sequelize.STRING,
+    'totpSecret': Sequelize.STRING
 })
 
 const Org = sequelize.define('orgs', { "orgname": Sequelize.STRING, "owner": Sequelize.STRING })
@@ -38,6 +39,11 @@ const Notes = sequelize.define('notes', {
     "noteBody": Sequelize.STRING
 })
 
+const Wallet = sequelize.define('wallets',{
+    "username": Sequelize.STRING,
+    "BTC": Sequelize.FLOAT,
+    "ETH": Sequelize.FLOAT
+})
 
 sequelize.sync({ force: true })
     .then(() => {
@@ -49,11 +55,14 @@ sequelize.sync({ force: true })
             { from_stnt: 'Delhi', to_stnt: 'Chennai', ntrains: 3 }
         ]);
         Users.create(
-            { username: 'vulnlabAdmin', email: 'vulnlabAdmin@vuln.js', password: 'SuperSecurePassword', orgname: '', apiToken: crypto.randomBytes(20).toString('hex') }
+            { username: 'vulnlabAdmin', email: 'vulnlabAdmin@vuln.js', password: 'SuperSecurePassword', orgname: '', apiToken: crypto.randomBytes(20).toString('hex'), totpSecret: '' }
         );
         Notes.create(
             { username: 'vulnlabAdmin', noteTitle: 'ThisIsAdminNote', noteBody: 'SuperSecretNote' }
         );
+        Wallet.create(
+            {username: "vulnlabAdmin", BTC: "0.00245", ETH: "0.5"}
+        )
     })
     .catch((err) => {
         console.log(err)
@@ -64,5 +73,6 @@ module.exports = {
     Train,
     Users,
     Notes,
-    Org
+    Org,
+    Wallet
 }

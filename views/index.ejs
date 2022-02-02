@@ -59,6 +59,7 @@
         <div class="card-body">
           <h5 class="card-title">XSS</h5>
           <p class="card-text">Explore multiple XSS vulnerabilities occuring in different contexts.</p>
+          <br>
           <a href="/xss" class="btn btn-primary">Exploit -&#x3e;</a>
         </div>
       </div>
@@ -67,7 +68,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">SSTI</h5>
-          <p class="card-text">Application is dynamically rendering template</p>
+          <p class="card-text">Application is dynamically rendering template, your goal is to steal the database credentials from environment variables</p>
           <a href="/ssti" class="btn btn-primary">Exploit   -&#x3e;</a>
         </div>
       </div>
@@ -154,6 +155,27 @@
           <h5 class="card-title">CORS CSRF</h5>
           <p class="card-text">Application has insecure CORS implementation, your goal is to change user password by exploiting CORS.</p>
           <a href="cors-csrf-edit-password" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">2FA</h5>
+          <p class="card-text">Application has insecure 2FA implementation.</p><br>
+          <a href="/setup-totp" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Cross-Site WebSocket Hijacking</h5>
+          <p class="card-text">Application is using old version of socket.io, your goal is to exploit it to disclose the balance in vicitm user account.</p>
+          <a href="/cross-site-websocket-hijacking" class="btn btn-primary">Exploit -&#x3e;</a>
         </div>
       </div>
     </div>

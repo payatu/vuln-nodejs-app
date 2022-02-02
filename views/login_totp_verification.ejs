@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <div class='row'>
+            <div class='col-md-12'>
+
+                <div class='row'>
+                    <div class='col-md-6 col-md-offset-3'>
+                        <div class='page-header'>
+                            <h2>TOTP Verification</h2>
+                            <br>
+                        </div>
+                        <div class="card" style="width: 80%">
+                            <div class="card-body">
+                                <h5 class="card-title">Enter code to login</h5>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="totp_code" placeholder="">
+                                </div>
+                                <button type="submit" onclick="totp_verification()"
+                                    class="btn btn-primary">Verify</button>
+                                <br><br>
+                                <div id="verification-error">
+
+                                </div>
+
+                                <script>
+                                    function totp_verification() {
+                                        var totp_code = document.getElementById("totp_code").value;
+
+                                        var xhr = new XMLHttpRequest();
+                                        xhr.onreadystatechange = function () {
+                                            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                                window.location = xhr.responseText;
+                                            } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 403) {
+                                                document.getElementById('verification-error').innerHTML = `<div class="alert alert-danger" role="alert">
+                                                    Verification failed!, Try again.
+                                            </div>`;
+                                            } 
+                                        }
+                                        const data = "totp_code="+ totp_code;
+                                        xhr.open('POST', window.location, true);
+                                        xhr.withCredentials = true;
+                                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                                        xhr.send(data);
+                                    }
+                                </script>
+</body>
+
+</html>
