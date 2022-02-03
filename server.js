@@ -61,6 +61,6 @@ io.use((socket, next) => {
     });
 
     socket.on('new_message', (data) => {
-        io.sockets.emit('new_message', { message: data.message, username: socket.username })
+        io.sockets.emit('new_message', { message: data.message, username: socket.user.username, login_user: socket.user.username })
     })
 });

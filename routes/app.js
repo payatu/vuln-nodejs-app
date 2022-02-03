@@ -2,6 +2,7 @@ const express = require('express');
 const vuln_handler = require("../controllers/vuln_handler");
 const router = express.Router();
 const auth_controller = require('../controllers/auth_controller');
+const { authenticateToken } = require('../controllers/auth_controller');
 
 
 router.get('/', auth_controller.authenticateToken, vuln_handler.app_index);
@@ -104,4 +105,7 @@ router.route('/totp-verification')
 router.post('/disable-totp', auth_controller.authenticateToken, vuln_handler.totp_disable_post);
 
 router.get('/cross-site-websocket-hijacking', auth_controller.authenticateToken, vuln_handler.websocket_hijacking_get);
+
+router.get('/websocket-xss', auth_controller.authenticateToken, vuln_handler.websocket_xss_get);
+
 module.exports = router;

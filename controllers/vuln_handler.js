@@ -221,7 +221,7 @@ const generate_ticket_get = (req, res) => {
 const ticket_booking_get = (req, res) => {
 
     let options = { path: "test.pdf" };
-    let file = { url: `http://localhost:${env.HOST_PORT}/ticket/generate_ticket?passenger_name=${req.query.passenger_name}&from_stnt=${req.query.from_stnt}&to_stnt=${req.query.to_stnt}&date=${req.query.date}` };
+    let file = { url: `http://localhost:${process.env.HOST_PORT}/ticket/generate_ticket?passenger_name=${req.query.passenger_name}&from_stnt=${req.query.from_stnt}&to_stnt=${req.query.to_stnt}&date=${req.query.date}` };
 
     html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
         res.header('Content-Disposition', 'attachment; filename="ticket.pdf"');
@@ -479,6 +479,12 @@ const websocket_hijacking_get = (req, res)=> {
     })
 }
 
+const websocket_xss_get = (req, res)=> {
+    res.render('websocket-xss', {
+        username: req.user.username
+    })
+}
+
 module.exports = {
     app_index,
     xss_lab,
@@ -525,5 +531,6 @@ module.exports = {
     login_totp_verification_get,
     login_totp_verification_post,
     totp_disable_post,
-    websocket_hijacking_get
+    websocket_hijacking_get,
+    websocket_xss_get
 }

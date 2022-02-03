@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>WebSocket XSS</h2>
+        <br>
+        <p>Application is using socket.io for real-time chat feature, But has only implemented client side input
+            sanitization your goal is to perform XSS to steal other users session cookie.</p>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h5 class="card-title">Chat with other users</h5>
+                <p class="card-text">
+                <div id="message_box" class="highlight"
+                    style="background-color: #efeff1; height: 250px; padding: 10px; overflow-y: scroll;">
+                </div>
+                </p>
+                <div class="form-row">
+                    <div class="col-10">
+                        <input type="text" id="message" class="form-control" placeholder="type message..">
+                    </div>
+                    <div class="col-2">
+                        <input style="width: 100%;" id="send_message" type="submit" class="btn btn-primary"
+                            value="Send">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <script>
+            function escape(data){
+                return data.replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g,"&quot;")
+                        .replace(/'/g, "&#39;");
+            }
+            window.onload = function () {
+                var current_user = "<%=username%>";
+                var message = document.getElementById('message');
+                var message_box = document.getElementById('message_box')
+                var send_message = document.getElementById('send_message');
+                var socket = io.connect(window.location.origin);
+
+                send_message.addEventListener('click', () => {
+                    if (message.value === '') return alert('Error: Blank Message!');
+
+                    socket.emit('new_message', { message: escape(message.value)})
+                    message.value = ''
+                })
+                socket.on('new_message', (data) => {
+                    console.log(data);
+                    const current_messages = message_box.innerHTML
+                    if (data.username === current_user) {
+                        message_box.innerHTML = current_messages + `<b><p style="color:rgb(114, 114, 114); display: inline-block;"> You:</p></b> ${data.message}</pre><br>`
+                    } else {
+                        message_box.innerHTML = current_messages + `<b><p style="color:rgb(250, 127, 168); display: inline-block;"> ${data.username}:</p></b> ${data.message}</pre><br>`;
+                    }
+                })
+            }
+        </script>
+</body>
+
+</html>
