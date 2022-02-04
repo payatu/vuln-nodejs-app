@@ -68,6 +68,27 @@ node server.js
 ```
 access the application http://localhost:9000
 
+## Exercises
+
+* Command Injection
+* Insecure Deserialization
+* SQL Injection
+* XML external entity injection
+* XSS
+* Server Side Template Injection
+* JWT weak secret
+* Insecure direct object references
+* SSRF via PDF generator
+* Web message XSS
+* Web message CSRF
+* Web message Information Disclosure
+* CORS information Disclosure
+* CORS CSRF
+* 2FA Insecure Implementation
+* Cross-Site WebSocket Hijacking
+* WebSocket XSS
+
+
 ## TODO:
 
 * <s>Dockerize the application</s>.

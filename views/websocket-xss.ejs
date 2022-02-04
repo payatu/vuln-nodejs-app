@@ -35,14 +35,35 @@
                 </div>
             </div>
         </div>
-        <br><br>
+        <br>
+        <h4> Vulnerable Code:</h4>
+        <h5>
+            <pre class="prettyprint">
+  # server.js
+
+  socket.on('new_message', (data) => {
+    io.sockets.emit('new_message', { message: data.message, username: socket.user.username, login_user: socket.user.username })
+  })
+
+  # websocket-xss.ejs
+  socket.on('new_message', (data) => {
+    const current_messages = message_box.innerHTML
+    if (data.username === current_user) {
+      message_box.innerHTML = current_messages + `&lt;b&gt;&lt;p style=&quot;color:rgb(114, 114, 114); display: inline-block;&quot;&gt; You:&lt;/p&gt;&lt;/b&gt; ${data.message}&lt;/pre&gt;&lt;br&gt;`
+    } else { 
+      message_box.innerHTML = current_messages + `&lt;b&gt;&lt;p style=&quot;color:rgb(250, 127, 168); display: inline-block;&quot;&gt; ${data.username}:&lt;/p&gt;&lt;/b&gt; ${data.message}&lt;/pre&gt;&lt;br&gt;`;
+    }
+  }) 
+  
+</pre>
+        </h5>
         <script>
-            function escape(data){
+            function escape(data) {
                 return data.replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g,"&quot;")
-                        .replace(/'/g, "&#39;");
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
             }
             window.onload = function () {
                 var current_user = "<%=username%>";
@@ -54,11 +75,10 @@
                 send_message.addEventListener('click', () => {
                     if (message.value === '') return alert('Error: Blank Message!');
 
-                    socket.emit('new_message', { message: escape(message.value)})
+                    socket.emit('new_message', { message: escape(message.value) })
                     message.value = ''
                 })
                 socket.on('new_message', (data) => {
-                    console.log(data);
                     const current_messages = message_box.innerHTML
                     if (data.username === current_user) {
                         message_box.innerHTML = current_messages + `<b><p style="color:rgb(114, 114, 114); display: inline-block;"> You:</p></b> ${data.message}</pre><br>`
