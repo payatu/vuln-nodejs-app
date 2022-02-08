@@ -20,7 +20,8 @@
     "x-xss-protection": "^2.0.0"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "build": "cd vuln_react_app && npm install && npm run build"
   },
   "name": "vuln-nodejs-app",
   "version": "1.0.0",

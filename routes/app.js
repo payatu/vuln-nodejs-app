@@ -108,4 +108,9 @@ router.get('/cross-site-websocket-hijacking', auth_controller.authenticateToken,
 
 router.get('/websocket-xss', auth_controller.authenticateToken, vuln_handler.websocket_xss_get);
 
+router.route('/react-xss')
+    .get(auth_controller.authenticateToken, vuln_handler.react_xss_get)
+    .options(vuln_handler.react_xss_options)
+    .post(vuln_handler.react_xss_post);
+    
 module.exports = router;

@@ -38,7 +38,7 @@ cd ./vuln-nodejs-app
 2. Create **mysql** database.
 
 ```bash
-$ mysql -u root -p
+$ mysql -u <mysql_user> -p
 
 mysql> create database vuln_nodejs_app;
 
@@ -61,7 +61,13 @@ HOST_PORT=9000
 npm install
 ```
 
-5. Start the server
+5. Build ReactJs frontend.
+
+```bash
+npm run build
+```
+
+6. Start the server
 
 ```bash
 node server.js
@@ -87,7 +93,7 @@ access the application http://localhost:9000
 * 2FA Insecure Implementation
 * Cross-Site WebSocket Hijacking
 * WebSocket XSS
-
+* ReactJS XSS
 
 ## TODO:
 

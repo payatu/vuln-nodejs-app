@@ -9,7 +9,8 @@ var ejs = require('ejs');
 var html_to_pdf = require('html-pdf-node');
 const { Op, and } = require('sequelize')
 const md5 = require('md5');
-const twofactor = require('node-2fa')
+const twofactor = require('node-2fa');
+const path = require('path');
 
 var con = mysql.createConnection({
     database: process.env.DB_NAME,
@@ -469,20 +470,42 @@ const totp_disable_post = (req, res) => {
     }
 }
 
-const websocket_hijacking_get = (req, res)=> {
-    Wallet.findOne({where:{username: req.user.username}}, {attributes:['BTC', 'ETH']})
-    .then((crypto_balance)=>{
-        res.render('cross-site-websocket-hijacking',{
-            BTC: crypto_balance.BTC,
-            ETH: crypto_balance.ETH
-        });  
-    })
+const websocket_hijacking_get = (req, res) => {
+    Wallet.findOne({ where: { username: req.user.username } }, { attributes: ['BTC', 'ETH'] })
+        .then((crypto_balance) => {
+            res.render('cross-site-websocket-hijacking', {
+                BTC: crypto_balance.BTC,
+                ETH: crypto_balance.ETH
+            });
+        })
 }
 
-const websocket_xss_get = (req, res)=> {
+const websocket_xss_get = (req, res) => {
     res.render('websocket-xss', {
         username: req.user.username
     })
+}
+
+const react_xss_get = (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../vuln_react_app/build', 'index.html'));
+}
+
+const react_xss_post = (req, res) => {
+    console.log(req);
+    res.header("Access-Control-Allow-Origin", req.get('origin'));
+    res.header("Access-Control-Allow-Credentials", 'true');
+    res.send({name:req.body.name, email: req.body.email, website: req.body.website});
+}
+
+const react_xss_options = (req, res) => {
+    if (req.get('origin') !== undefined) {
+        res.header("Access-Control-Allow-Origin", req.get('origin'));
+        res.header("Access-Control-Allow-Credentials", 'true');
+        res.header("Access-Control-Allow-Methods", 'GET, POST');
+        res.header("Access-Control-Allow-Headers", 'Content-Type');
+        res.header("Access-Control-Max-Age", '5');
+    }
+    res.send(200);
 }
 
 module.exports = {
@@ -532,5 +555,8 @@ module.exports = {
     login_totp_verification_post,
     totp_disable_post,
     websocket_hijacking_get,
-    websocket_xss_get
+    websocket_xss_get,
+    react_xss_get,
+    react_xss_options,
+    react_xss_post
 }
