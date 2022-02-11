@@ -11,6 +11,8 @@ const { Op, and } = require('sequelize')
 const md5 = require('md5');
 const twofactor = require('node-2fa');
 const path = require('path');
+const { options } = require('../routes/app.js');
+const MongoClient = require('mongodb').MongoClient;
 
 var con = mysql.createConnection({
     database: process.env.DB_NAME,
@@ -239,10 +241,6 @@ const user_edit_get = (req, res) => {
                 email: user.email
             })
         })
-
-
-
-
 }
 
 const edit_password_post = (req, res) => {
@@ -494,7 +492,7 @@ const react_xss_post = (req, res) => {
     console.log(req);
     res.header("Access-Control-Allow-Origin", req.get('origin'));
     res.header("Access-Control-Allow-Credentials", 'true');
-    res.send({name:req.body.name, email: req.body.email, website: req.body.website});
+    res.send({ name: req.body.name, email: req.body.email, website: req.body.website });
 }
 
 const react_xss_options = (req, res) => {
@@ -506,6 +504,58 @@ const react_xss_options = (req, res) => {
         res.header("Access-Control-Max-Age", '5');
     }
     res.send(200);
+}
+
+if (process.env.MONGODB_ADMINUSERNAME != '' && process.env.MONGODB_ADMINPASSWORD != '') {
+    var dbURL = `mongodb://${process.env.MONGODB_ADMINUSERNAME}:${process.env.MONGODB_ADMINPASSWORD}@${process.env.MONGODB_SERVER}:27017/`;
+} else {
+    var dbURL = 'mongodb://localhost:27017/';
+}
+
+const mongodb_config = { connectTimeoutMS: 2000 };
+
+MongoClient.connect(dbURL, mongodb_config, (err, db) => {
+    if (err) return console.log("MongoDB connection error: NoSQL exercise will not work " + err)
+    const dbo = db.db('vuln_nodejs_app')
+    dbo.dropCollection('mongodb-notes', (err, deleted) => {
+        if (deleted) console.log('Dropping old mongodb collection')
+    })
+    dbo.collection('mongodb-notes').insertOne({ username: "SuperSecretUser", noteTitle: "SuperSecretNote", noteBody: "YOU HAVE SOLVED THE CHALLENGE" }, (err, result) => {
+        if (err) return console.log('Internal Error: unable to insert data into mongodb-notes collection');
+    })
+})
+
+const mongodb_notes_get = (req, res) => {
+    res.render('mongodb-notes', {
+        username: req.user.username
+    });
+}
+
+const mongodb_save_notes_post = (req, res) => {
+    const noteObj = { username: req.user.username, noteTitle: req.body.noteTitle, noteBody: req.body.noteBody }
+    MongoClient.connect(dbURL, mongodb_config, (err, db) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal error!')
+        }
+        dbo = db.db('vuln_nodejs_app');
+        dbo.collection('mongodb-notes').insertOne(noteObj, (err, result) => {
+            if (err) return res.status(500).send('Internal error!');
+            console.log("Note saved")
+            res.send({ "success": "true" })
+        })
+    })
+}
+
+const mongodb_show_notes_post = (req, res) => {
+    MongoClient.connect(dbURL, mongodb_config, (err, client) => {
+        if (err) return res.status('500').send('MongoDB is not installed, Please follow the installation guideline.');
+        const db = client.db('vuln_nodejs_app')
+        db.collection('mongodb-notes').find({ username: req.body.username }).toArray()
+            .then((notes) => {
+                res.send(notes)
+            })
+    })
 }
 
 module.exports = {
@@ -558,5 +608,8 @@ module.exports = {
     websocket_xss_get,
     react_xss_get,
     react_xss_options,
-    react_xss_post
+    react_xss_post,
+    mongodb_notes_get,
+    mongodb_save_notes_post,
+    mongodb_show_notes_post
 }

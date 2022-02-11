@@ -197,12 +197,32 @@
           <p class="card-text">Application is using ReactJS which provides by default protection from XSS your goal is to
             perform XSS in ReactJS applications.</p>
           <br>
-          <a href="/react-xss" class="btn btn-primary">Exploit -&#x3e;</a>
+          <a href="/react-href-xss" class="btn btn-primary">Exploit -&#x3e;</a>
         </div>
       </div>
     </div>
   </div>
   <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">React ref-innerHTML XSS</h5>
+          <p class="card-text">Application is using <code>ref </code>escape hatch with <code>innerHTML</code> property to update user supplied input.</p>          <a href="/react-ref-innerHTML-xss"" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">NoSQL Injection</h5>
+          <p class="card-text">Application is using <code>mongodb</code> to handle user notes your goal is to perfrom NoSQL injection to access other users notes.</p>
+          <a href="/mongodb-notes" class="btn btn-primary">Exploit -&#x3e;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br/>
 </body>
 </title>
 </html>

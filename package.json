@@ -10,6 +10,7 @@
     "jsonwebtoken": "^8.5.1",
     "libxmljs": "^0.19.7",
     "md5": "^2.3.0",
+    "mongodb": "^4.3.1",
     "mysql2": "^2.3.3",
     "node-2fa": "^2.0.3",
     "node-serialize": "^0.0.4",

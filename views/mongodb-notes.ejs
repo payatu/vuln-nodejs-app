@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>NoSQL Injection</h2>
+        <br>
+        <p>Application is using <code>mongodb</code> to handle user notes your goal is to read a note with the title
+            <code>SuperSecretNote</code> by
+            performing NoSQL injection.
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Create Notes</h5>
+                        <p class="card-text">
+                        <p class="card-text"><input class="form-control" id="noteTitle" type="text" value=""></p>
+                        <p class="card-text"><textarea class="form-control" id="noteBody"></textarea></p>
+                        <input type="submit" value="Add" onclick="saveNote()" class="btn btn-primary">
+
+                        <p class="card-text"></p>
+                        <div id='message'></div>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Notes</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notes-table">
+                                <tr id="root">
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <h4> Vulnerable Code:</h4>
+        <h5>
+            <pre class="prettyprint">
+
+  const mongodb_show_notes_post = (req, res) => {
+    MongoClient.connect(dbURL, mongodb_config, (err, client) => {
+      if (err) return res.status('500').send('MongoDB is not installed, Please follow the installation guideline.');
+      const db = client.db('vuln_nodejs_app')
+      db.collection('mongodb-notes').find({ username: req.body.username }).toArray()
+        .then((notes) => {
+            res.send(notes)
+      })
+    })
+  }
+                </pre>
+        </h5>
+        <script>
+            var username = "<%= username%>";
+            function saveNote() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        document.getElementById('message').innerHTML = `<div class="alert alert-success" role="alert">Note Saved!</div>`;
+                        loadNotes();
+                    }
+                    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 500) {
+                        alert('Internal error!')
+                        loadNotes();
+                    }
+                }
+                xhr.open('POST', window.location.origin + '/mongodb-notes');
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                data = "noteTitle=" + noteTitle.value + "&noteBody=" + noteBody.value;
+                xhr.withCredentials = true;
+                xhr.send(data);
+            }
+
+            loadNotes();
+
+            function loadNotes() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        var data = JSON.parse(xhr.response);
+                        document.getElementById('notes-table').innerHTML = "";
+                        document.getElementById('notes-table').innerHTML = '<tr id="root"></tr>'
+                        data.forEach(element => root.insertAdjacentHTML('beforebegin', `<tr><td>${element.noteTitle}</td><td>${element.noteBody}</td></tr>`));
+                    }
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 500) {
+                        alert(xhr.response);
+                    }
+                }
+                var data = { "username": username }
+                xhr.open('POST', window.location.href + "/show-notes");
+                xhr.setRequestHeader('Content-type', 'application/json');
+                xhr.withCredentials = true;
+                xhr.send(JSON.stringify(data));
+            }
+
+        </script>

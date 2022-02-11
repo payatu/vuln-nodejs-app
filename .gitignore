@@ -3,3 +3,4 @@
 .eslintrc.js
 node_modules/
 vuln_react_app/build/
+solutions/

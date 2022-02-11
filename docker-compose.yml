@@ -20,6 +20,19 @@ services:
     networks:
       - internalnet
 
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27018:27017
+    expose:
+      - 27018
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=vuln_nodejs_app
+      - MONGO_INITDB_ROOT_PASSWORD=supersecret
+    networks:
+     - internalnet
+
   nodeapp:
     container_name: vuln_nodejs_app
     build: .
@@ -40,8 +53,12 @@ services:
       SERVICE_TAGS: prod
       SERVICE_NAME: nodeappservice
       JWT_SECRET: ${JWT_SECRET}
+      MONGODB_SERVER: mongodb
+      MONGODB_ADMINUSERNAME: vuln_nodejs_app
+      MONGODB_ADMINPASSWORD: supersecret
     depends_on:
       - mysqldb
+      - mongodb
     networks:
       - internalnet
 

@@ -4,6 +4,29 @@
 <br>
 </a>
 
+## Exercises
+
+1. Command Injection
+2. Insecure Deserialization
+3. SQL Injection
+4. XML external entity injection
+5. XSS
+6. Server Side Template Injection
+7. JWT weak secret
+8. Insecure direct object references
+9. SSRF via PDF generator
+10. Web message XSS
+11. Web message CSRF
+12. Web message Information Disclosure
+13. CORS information Disclosure
+14. CORS CSRF
+15. 2FA Insecure Implementation
+16. Cross-Site WebSocket Hijacking
+17. WebSocket XSS
+18. ReactJS href XSS
+19. React ref-innerHTML XSS
+20. NoSQL Injection
+
 ## Installation
 
 ### Using docker-compose 
@@ -44,7 +67,7 @@ mysql> create database vuln_nodejs_app;
 
 ```
 
-3. Update your mysql username and password inside **.env** file.
+3. Update your mysql and mongodb database username and password inside **.env** file.
 
 ```html
 DB_PORT=3306
@@ -52,8 +75,12 @@ DB_NAME=vuln_nodejs_app
 DB_USER=vuln_nodejs_user
 DB_PASS=passw0rd
 HOST_PORT=9000
-
+JWT_SECRET=secret
+MONGODB_SERVER=localhost
+MONGODB_ADMINUSERNAME=
+MONGODB_ADMINPASSWORD=
 ```
+
 
 4. Install the dependencies.
 
@@ -72,28 +99,7 @@ npm run build
 ```bash
 node server.js
 ```
-access the application http://localhost:9000
-
-## Exercises
-
-* Command Injection
-* Insecure Deserialization
-* SQL Injection
-* XML external entity injection
-* XSS
-* Server Side Template Injection
-* JWT weak secret
-* Insecure direct object references
-* SSRF via PDF generator
-* Web message XSS
-* Web message CSRF
-* Web message Information Disclosure
-* CORS information Disclosure
-* CORS CSRF
-* 2FA Insecure Implementation
-* Cross-Site WebSocket Hijacking
-* WebSocket XSS
-* ReactJS XSS
+You can now access the application at http://localhost:9000
 
 ## TODO:
 
