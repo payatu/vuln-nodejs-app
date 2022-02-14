@@ -23,7 +23,7 @@ class React_href_xss extends Component {
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const website = document.getElementById('website').value;
-        const request = await fetch(`http://tauheedkhan.com:9000/react-xss`, {
+        const request = await fetch(`${window.location.origin}/react-xss`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -52,14 +52,15 @@
         <h4> Vulnerable Code:</h4>
         <h5>
             <pre class="prettyprint">
-const userNotes_get = (req, res)=> {
+
+  const userNotes_get = (req, res)=> {
     const username = req.params.username;
     Notes.findAll({where:{username:username}})
-        .then((result)=>{
-        res.header("Content-Type", "application/json")
-        res.send(JSON.stringify(result));
+      .then((result)=>{
+      res.header("Content-Type", "application/json")
+      res.send(JSON.stringify(result));
     })
-}
+  }
                 </pre>
         </h5>
         <script>

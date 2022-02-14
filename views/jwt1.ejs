@@ -12,7 +12,7 @@
     <div class='container' style='min-height: 450px'>
         <h2>JWT Weak Secret</h2>
         <br>
-        <p>Application is using weak secret to create JWT that can lead to authentication bypass. Your goal is to access API Key of username: <code class="highlighter-rouge">vulnlabAdmin</code></p>
+        <p>Application is using weak secret to create JSON web token that can lead to authentication bypass. Your goal is to access API Key of username: <code class="highlighter-rouge">vulnlabAdmin</code></p>
         <div class="card" style="width: 50%">
             <div class="card-body">
                 <h5 class="card-title">API Token</h5>
@@ -25,12 +25,15 @@
         <h4> Vulnerable Code:</h4>
         <h5>
             <pre class="prettyprint">
-var secret = "secret";
 
-function generateAccessToken(username, email) {
+  # .env 
+  JWT_SECRET=secret
+
+  # controllers/auth_controller.js
+  function generateAccessToken(username, email) {
     const payload = {"username": username};
     return jwt.sign(payload, secret);
-}
+  }
                 </pre>
         </h5>
         <script>

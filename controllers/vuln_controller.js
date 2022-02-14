@@ -509,7 +509,7 @@ const react_xss_options = (req, res) => {
 if (process.env.MONGODB_ADMINUSERNAME != '' && process.env.MONGODB_ADMINPASSWORD != '') {
     var dbURL = `mongodb://${process.env.MONGODB_ADMINUSERNAME}:${process.env.MONGODB_ADMINPASSWORD}@${process.env.MONGODB_SERVER}:27017/`;
 } else {
-    var dbURL = 'mongodb://localhost:27017/';
+   var dbURL = 'mongodb://localhost:27017/';
 }
 
 const mongodb_config = { connectTimeoutMS: 2000 };

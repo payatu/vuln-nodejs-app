@@ -26,7 +26,7 @@
   <input type="submit" value="submit">
 </form>
 <br><br>
-<h4> Exploit 3:</h4><p> xss inside json, here application uses &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create
+<h4> Exploit 3:</h4><p> xss inside json, here application is using &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create
 json object with user supplied input since it uses &#x3c;%- instead of &#x3c;%= ejs will not encode html charater also JSON.stringify
 will escape double quotes that means we have to find a way to break out of the double quote to do that we will use this 
 payload  &#x3c;/script&#x3e;&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;</p>
