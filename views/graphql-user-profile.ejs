@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+
+    <div class='container' style='min-height: 450px'>
+        <h2>Graphql SQLI</h2>
+        <br>
+        <p>Application is trusting data supplied from the API client and using it in a sql query without proper
+            santization your goal is to perform SQL injection.
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">User Profile</h5>
+                        <p class="card-text">
+                        <p class="card-text">Username: <input class="form-control" id="username" type="text" readonly></p>
+                        <p class="card-text">Email: <input class="form-control" id="email" type="email" readonly></p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <h4> Vulnerable Code:</h4>
+        <h5>
+            <pre class="prettyprint">
+
+  # vuln_controller.js
+  const graphql_user_profile_get = (req, res)=>{
+    res.render('graphql-user-profile', {
+        username: req.user.username
+    });
+  }
+
+  # vuln_controller.js
+  async function graphqlGetUser(arg){
+    const username = arg.username
+    const q = "SELECT * FROM users where username='" + username + "';";
+    await con.connect()
+    const userdata = await con.promise().query(q)
+    console.log(userdata[0][0])
+    return userdata[0][0]
+  }            
+                </pre>
+        </h5>
+        <script>
+            loadProfile();
+            function loadProfile() {
+                fetch(`${window.location.origin}/graphql`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: `query loadProfile($username: String!){ user(username: $username){ username email }}`,
+                        variables: { username: "<%=username%>" }
+                    })
+                })
+                .then((res) => res.json())
+                .then((result) => {
+                    username.value = result.data.user.username
+                    email.value = result.data.user.email;
+                })
+            }
+        </script>
+</body>
+
+</html>

@@ -1,21 +1,25 @@
-const express = require('express');
-const app = express();
-const router = require('./routes/app');
-const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
+const express = require('express')
+const app = express()
+const router = require('./routes/app')
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
 const { Users, Wallet } = require('./models/db')
-const cookie = require('cookie');
-const request = require('request');
+const cookie = require('cookie')
+const request = require('request')
 const path = require('path')
 
-require("dotenv").config();
+require("dotenv").config()
 
 app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json());
 
 app.use(router);
+
 app.use(express.static('./assets'))
+
 app.use(express.static(path.resolve(__dirname, './vuln_react_app/build')));
 
 app.set('view engine', 'ejs');

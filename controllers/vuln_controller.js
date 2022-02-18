@@ -558,6 +558,26 @@ const mongodb_show_notes_post = (req, res) => {
     })
 }
 
+// GrqphQl root
+const graphqlroot = {
+    user: graphqlGetUser
+}
+
+async function graphqlGetUser(arg){
+    const username = arg.username
+    const q = "SELECT * FROM users where username='" + username + "';";
+    await con.connect()
+    const userdata = await con.promise().query(q)
+    console.log(userdata[0][0])
+    return userdata[0][0]
+}
+
+const graphql_user_profile_get = (req, res)=>{
+    res.render('graphql-user-profile', {
+        username: req.user.username
+    });
+}
+
 module.exports = {
     app_index,
     xss_lab,
@@ -611,5 +631,7 @@ module.exports = {
     react_xss_post,
     mongodb_notes_get,
     mongodb_save_notes_post,
-    mongodb_show_notes_post
+    mongodb_show_notes_post,
+    graphql_user_profile_get,
+    graphqlroot
 }
