@@ -5,7 +5,6 @@ const auth_controller = require('../controllers/auth_controller');
 const { authenticateToken } = require('../controllers/auth_controller');
 const { schema }  = require('../models/graphql-schema')
 const { graphqlHTTP } = require('express-graphql')
-
 router.get('/', authenticateToken, vuln_controller.app_index);
 
 router.route('/register')
@@ -120,12 +119,18 @@ router.route('/mongodb-notes')
 router.route('/mongodb-notes/show-notes')
     .post(authenticateToken, vuln_controller.mongodb_show_notes_post);
 
-router.get('/graphql-user-profile', authenticateToken, vuln_controller.graphql_user_profile_get);
-
+// GraphQL rotuer
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
     rootValue: vuln_controller.graphqlroot,
-    graphiql: true
+    graphiql: false,
 }))
+
+router.get('/graphql-user-profile', authenticateToken, vuln_controller.graphql_user_profile_get);
+
+router.get('/graphql-information-disclosure', authenticateToken, vuln_controller.graphql_information_disclosure_get);
+
+router.route('/graphql-update-profile')
+    .get(authenticateToken, vuln_controller.graphql_update_profile_get)
 
 module.exports = router;

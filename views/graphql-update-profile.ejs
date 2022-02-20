@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+
+    <div class='container' style='min-height: 450px'>
+        <h2>Graphql CSRF</h2>
+        <br>
+        <p>Application is using graphql to update user information, your goal is to change information of other users by
+            perform CSRF attack.
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">User Profile</h5>
+                        <p class="card-text">
+                        <p class="card-text">Username: <input class="form-control" id="username" type="text" readonly></p>
+                        <p class="card-text">Email: <input class="form-control" id="email" type="email"></p>
+                        <p class="card-text">Password: <input class="form-control" id="password" type="password"></p>
+                        <p class="card-text"> <input type="submit" value="Save" onclick="validateInput()" class="btn btn-primary"></p>
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <h5>Reference:</h5>
+        <li><a href="https://www.npmjs.com/package/express-graphql#http-usage">express-graphql</a></li>
+        <script>
+            loadProfile();
+            function loadProfile() {
+                fetch(`${window.location.origin}/graphql`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: `query loadProfile($username: String!){ user(username: $username){ username email }}`,
+                        variables: { username: "<%=username%>" }
+                    })
+                })
+                    .then((res) => res.json())
+                    .then((result) => {
+                        username.value = result.data.user.username
+                        email.value = result.data.user.email;
+                    })
+            }
+
+            function updateProfile(){
+                fetch(`${window.location.origin}/graphql`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: `mutation { updateProfile(username: "${username.value}", email: "${email.value}", password: "${password.value}")}`,
+                        variables: null
+                    })
+                })
+                    .then((res) => res.json())
+                    .then((result) => {
+                        if (result.errors){
+                            alert("Update Eror")
+                        }
+                        if (result.data.updateProfile == "Update Successfull!"){
+                            alert("Profile updated!")
+                        }
+                    })
+            }
+
+            function validateInput() {
+                if (password.value == ""){
+                    alert('Password can not be empty!')
+                } else {
+                    updateProfile()
+                }
+            }
+        </script>
+</body>
+
+</html>

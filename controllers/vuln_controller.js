@@ -7,11 +7,10 @@ const mysql = require('mysql2');
 const { Train, Users, Notes, Org, Wallet } = require('../models/db.js');
 var ejs = require('ejs');
 var html_to_pdf = require('html-pdf-node');
-const { Op, and } = require('sequelize')
+const { Op } = require('sequelize')
 const md5 = require('md5');
 const twofactor = require('node-2fa');
 const path = require('path');
-const { options } = require('../routes/app.js');
 const MongoClient = require('mongodb').MongoClient;
 
 var con = mysql.createConnection({
@@ -560,22 +559,48 @@ const mongodb_show_notes_post = (req, res) => {
 
 // GrqphQl root
 const graphqlroot = {
-    user: graphqlGetUser
+    user: graphql_GetUser,
+    listUsers: graphql_AllUsers,
+    updateProfile: graphql_UpdateProfile
 }
 
-async function graphqlGetUser(arg){
+async function graphql_GetUser(arg){
     const username = arg.username
     const q = "SELECT * FROM users where username='" + username + "';";
     await con.connect()
     const userdata = await con.promise().query(q)
-    console.log(userdata[0][0])
     return userdata[0][0]
 }
 
-const graphql_user_profile_get = (req, res)=>{
+async function graphql_AllUsers(){
+    const q = "SELECT username, email from users;"
+    await con.connect() 
+    const userdata = await con.promise().query(q)
+    console.log(userdata[0][0])
+    return userdata[0]
+}
+
+async function graphql_UpdateProfile(args, req){
+    const updateQuery = `UPDATE users SET email='${args.email}', password='${md5(args.password)}' WHERE username = '${req.user.username}';`
+    await con.connect()
+    const updateResult = await con.promise().query(updateQuery)
+    const updateStatus = JSON.stringify(updateResult[0].affectedRows) // returns update status
+    return "Update Successfull!"
+}
+
+const graphql_user_profile_get = (req, res) => {
     res.render('graphql-user-profile', {
         username: req.user.username
     });
+}
+const graphql_information_disclosure_get = (req, res) => {
+    res.render('graphql-information-disclosure')
+}
+
+const graphql_update_profile_get = (req, res) => {
+    res.render('graphql-update-profile', {
+        username: req.user.username
+    })
 }
 
 module.exports = {
@@ -633,5 +658,7 @@ module.exports = {
     mongodb_save_notes_post,
     mongodb_show_notes_post,
     graphql_user_profile_get,
-    graphqlroot
+    graphqlroot,
+    graphql_information_disclosure_get,
+    graphql_update_profile_get
 }

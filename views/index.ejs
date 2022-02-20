@@ -27,6 +27,7 @@
                 <h5 class="card-title">Insecure Deserialization</h5>
                 <p class="card-text">Application is using node-serialize method unserialize to parse preference cookie,
                   your goal is to acheive the RCE.</p>
+  
                 <a href="/deserialization" class="btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
@@ -245,9 +246,8 @@
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Graphql SQLI</h5>
-                <p class="card-text">Application is trusting data supplied from the API client and using it in a sql query without proper
-                  santization your goal is to perform SQL injection.</p> <a href="/graphql-user-profile"
+                <h5 class="card-title">Graphql Information Disclosure</h5>
+                <p class="card-text">Application is using GraphQL, your goal is to disclose the information of other registered users.</p> <br> <a href="/graphql-information-disclosure"
                   class=" btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
@@ -255,15 +255,37 @@
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">NoSQL Injection</h5>
-                <p class="card-text">Application is using <code>mongodb</code> to handle user notes your goal is to
-                  perfrom NoSQL injection to access other users notes.</p>
-                <a href="/mongodb-notes" class="btn btn-primary">Exploit -&#x3e;</a>
+                <h5 class="card-title">Graphql SQLI</h5>
+                <p class="card-text">Application is trusting data supplied from the API client and using it in a sql query without proper
+                  santization your goal is to perform SQL injection.</p> <a href="/graphql-user-profile"
+                  class=" btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
           </div>
         </div>
         <br>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Graphql CSRF</h5>
+                <p class="card-text">Application is using GraphQL, your goal is to use it to perform CSRF.</p> <br> <a href="/graphql-update-profile"
+                  class=" btn btn-primary">Exploit -&#x3e;</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Graphql SQLI</h5>
+                <p class="card-text">Application is trusting data supplied from the API client and using it in a sql query without proper
+                  santization your goal is to perform SQL injection.</p> <a href="/graphql-user-profile"
+                  class=" btn btn-primary">Exploit -&#x3e;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br/>
       </div>
     </div>
   </div>

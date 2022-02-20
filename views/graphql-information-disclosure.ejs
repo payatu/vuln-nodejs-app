@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+
+    <div class='container' style='min-height: 450px'>
+        <h2>GraphQL Information Disclosure</h2>
+        <br>
+        <p>Application is using GraphQL, your goal is to disclose the information of other registered users.</p>
+        <div class="row">
+            <div class="col-sm-6">
+            <input type="submit" value="GraphQL Endopoint" onclick="window.open('/graphql', '_blank')" class="btn btn-secondary">
+            <br>
+            <br>
+            <h5>Referrence:</h5>
+            <li> <a href="https://blog.yeswehack.com/yeswerhackers/how-exploit-graphql-endpoint-bug-bounty/">How to exploit GraphQL endpoint: introspection, query, mutations & tools</a></li>
+        </div>
+        </div>
+        <br><br>
+        </h5>
+</body>
+
+</html>

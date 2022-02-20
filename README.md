@@ -26,6 +26,9 @@
 18. ReactJS href XSS
 19. React ref-innerHTML XSS
 20. NoSQL Injection
+21. GraphQL Information Disclosure
+22. GraphQL SQL Injection
+23. GraphQL CSRF
 
 ## Installation
 
