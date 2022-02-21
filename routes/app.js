@@ -123,14 +123,15 @@ router.route('/mongodb-notes/show-notes')
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
     rootValue: vuln_controller.graphqlroot,
-    graphiql: false,
+    graphiql: true,
 }))
 
 router.get('/graphql-user-profile', authenticateToken, vuln_controller.graphql_user_profile_get);
 
 router.get('/graphql-information-disclosure', authenticateToken, vuln_controller.graphql_information_disclosure_get);
 
-router.route('/graphql-update-profile')
-    .get(authenticateToken, vuln_controller.graphql_update_profile_get)
+router.get('/graphql-update-profile', authenticateToken, vuln_controller.graphql_update_profile_get);
+
+router.get('/graphql-idor-show-profile', authenticateToken, vuln_controller.graphql_idor_get);
 
 module.exports = router;

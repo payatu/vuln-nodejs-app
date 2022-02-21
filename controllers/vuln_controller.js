@@ -561,7 +561,8 @@ const mongodb_show_notes_post = (req, res) => {
 const graphqlroot = {
     user: graphql_GetUser,
     listUsers: graphql_AllUsers,
-    updateProfile: graphql_UpdateProfile
+    updateProfile: graphql_UpdateProfile,
+    showProfile: graphql_ShowProfile
 }
 
 async function graphql_GetUser(arg){
@@ -588,6 +589,14 @@ async function graphql_UpdateProfile(args, req){
     return "Update Successfull!"
 }
 
+async function graphql_ShowProfile(args){
+    const userid = args.userid
+    const q = "SELECT * FROM users where id='" + userid + "';";
+    await con.connect()
+    const userdata = await con.promise().query(q)
+    return userdata[0][0]
+}
+
 const graphql_user_profile_get = (req, res) => {
     res.render('graphql-user-profile', {
         username: req.user.username
@@ -600,6 +609,12 @@ const graphql_information_disclosure_get = (req, res) => {
 const graphql_update_profile_get = (req, res) => {
     res.render('graphql-update-profile', {
         username: req.user.username
+    })
+}
+
+const graphql_idor_get = (req, res) => {
+    res.render('graphql-idor-show-profile', {
+        userid: req.user.id
     })
 }
 
@@ -660,5 +675,6 @@ module.exports = {
     graphql_user_profile_get,
     graphqlroot,
     graphql_information_disclosure_get,
-    graphql_update_profile_get
+    graphql_update_profile_get,
+    graphql_idor_get
 }

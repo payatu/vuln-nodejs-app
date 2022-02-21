@@ -29,7 +29,7 @@
 21. GraphQL Information Disclosure
 22. GraphQL SQL Injection
 23. GraphQL CSRF
-
+24. GraphQL IDOR
 ## Installation
 
 ### Using docker-compose 

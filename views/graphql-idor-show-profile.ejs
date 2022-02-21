@@ -8,10 +8,11 @@
     <%- include ('includes/navigation.ejs') %>
 
     <div class='container' style='min-height: 450px'>
-        <h2>Graphql SQLI</h2>
+        <h2>Graphql IDOR</h2>
         <br>
-        <p>Application is trusting data supplied from the API client and using it in a sql query without proper
-            santization your goal is to perform SQL injection.
+        <p>Application is trusting data supplied from the API client and using 
+            it to show the user details without performing the authorization check, 
+            your goal is to access details of other users by perfrom IDOR.
         <div class="row">
             <div class="col-sm-6">
                 <div class="card">
@@ -31,22 +32,21 @@
             <pre class="prettyprint">
 
   # vuln_controller.js
-  const graphqlroot = {
-    user: graphql_GetUser,
-    listUsers: graphql_AllUsers,
-    updateProfile: graphql_UpdateProfile,
-    showProfile: graphql_ShowProfile
+   const graphqlroot = {
+     user: graphql_GetUser,
+     listUsers: graphql_AllUsers,
+     updateProfile: graphql_UpdateProfile,
+     showProfile: graphql_ShowProfile
   }
-             
+
   # vuln_controller.js
-  async function graphqlGetUser(arg){
-    const username = arg.username
-    const q = "SELECT * FROM users where username='" + username + "';";
+  async function graphql_ShowProfile(args){
+    const userid = args.userid
+    const q = "SELECT * FROM users where id='" + userid + "';";
     await con.connect()
     const userdata = await con.promise().query(q)
-    console.log(userdata[0][0])
     return userdata[0][0]
-  }            
+}          
                 </pre>
         </h5>
         <script>
@@ -58,14 +58,14 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        query: `query loadProfile($username: String!){ user(username: $username){ username email }}`,
-                        variables: { username: "<%=username%>" }
+                        query: `query loadProfile($userid: Int!){ showProfile(userid: $userid){ username email }}`,
+                        variables: { userid: <%=userid%> }
                     })
                 })
                 .then((res) => res.json())
                 .then((result) => {
-                    username.value = result.data.user.username
-                    email.value = result.data.user.email;
+                    username.value = result.data.showProfile.username
+                    email.value = result.data.showProfile.email;
                 })
             }
         </script>

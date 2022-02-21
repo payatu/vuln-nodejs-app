@@ -269,7 +269,7 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Graphql CSRF</h5>
-                <p class="card-text">Application is using GraphQL, your goal is to use it to perform CSRF.</p> <br> <a href="/graphql-update-profile"
+                <p class="card-text">Application is using GraphQL, your goal is to perform CSRF.</p> <br> <a href="/graphql-update-profile"
                   class=" btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
@@ -277,9 +277,9 @@
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Graphql SQLI</h5>
-                <p class="card-text">Application is trusting data supplied from the API client and using it in a sql query without proper
-                  santization your goal is to perform SQL injection.</p> <a href="/graphql-user-profile"
+                <h5 class="card-title">Graphql IDOR</h5>
+                <p class="card-text">Application is trusting data supplied from the API client and using 
+                  it to show the user details without performing the authorization check.</p> <a href="/graphql-idor-show-profile"
                   class=" btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
