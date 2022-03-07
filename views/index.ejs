@@ -62,7 +62,7 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">XSS</h5>
-                <p class="card-text">Explore multiple XSS vulnerabilities occuring in different contexts.</p>
+                <p class="card-text">Three different XSS cases are covered in this exercise depending on the <code>ejs</code> template syntax used to display user supplied input and context.</p>
                 <br>
                 <a href="/xss" class="btn btn-primary">Exploit -&#x3e;</a>
               </div>
@@ -72,8 +72,9 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">SSTI</h5>
-                <p class="card-text">Application is dynamically rendering template, your goal is to steal the database
-                  credentials from environment variables</p>
+                <p class="card-text">Application is directly concatinating user supplied input to template rather then
+                  passing it as a data this allows attackers to execute arbitrary code on the server, your goal is to steal the database
+                  credentials from environment variables.</p>
                 <a href="/ssti" class="btn btn-primary">Exploit -&#x3e;</a>
               </div>
             </div>
@@ -86,7 +87,7 @@
               <div class="card-body">
                 <h5 class="card-title">SQL Injection</h5>
                 <p class="card-text">Application is concatenating user supplied input to SQL statement without any
-                  validation.</p>
+                  santization.</p>
                 <a href="/sqli" class="btn btn-primary">Exploit -&#x3e;</a>
                 <br/>
               </div>

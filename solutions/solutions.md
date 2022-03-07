@@ -2,6 +2,85 @@
 <h1> Vulnerable NodeJS Application</h1>
 </center>
 
+
+- [1. Command Injection](#1-command-injection)
+  - [Exploit](#exploit)
+  - [Vulnerable Code](#vulnerable-code)
+  - [Fix](#fix)
+- [2. Insecure Deserialisation](#2-insecure-deserialisation)
+  - [Exploit](#exploit-1)
+  - [Vulnerable code](#vulnerable-code-1)
+  - [Fix](#fix-1)
+- [3. JWT weak secret](#3-jwt-weak-secret)
+  - [Exploit](#exploit-2)
+  - [Vulnerable Code](#vulnerable-code-2)
+  - [Fix](#fix-2)
+- [4. IDOR](#4-idor)
+  - [Exploit](#exploit-3)
+  - [Vulnerable Code](#vulnerable-code-3)
+  - [Fix](#fix-3)
+- [5. XSS](#5-xss)
+  - [Case 1: User supplied input rendered without any sanitization](#case-1-user-supplied-input-rendered-without-any-sanitization)
+  - [Case 2: User supplied input rendered inside script tag](#case-2-user-supplied-input-rendered-inside-script-tag)
+  - [Case 3: XSS inside JSON object](#case-3-xss-inside-json-object)
+- [6. SSTI](#6-ssti)
+  - [Exploit](#exploit-4)
+  - [Vulnerable Code](#vulnerable-code-4)
+- [7. SQL Injection:](#7-sql-injection)
+  - [Exploit](#exploit-5)
+  - [Vulnerable Code](#vulnerable-code-5)
+- [8. XXE](#8-xxe)
+  - [Solution](#solution)
+- [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
+    - [Vulnerable Code](#vulnerable-code-6)
+  - [Exploit](#exploit-6)
+- [10. Event Listener XSS](#10-event-listener-xss)
+  - [Vulnerable Code](#vulnerable-code-7)
+  - [Exploit](#exploit-7)
+- [11. Web Message CSRF](#11-web-message-csrf)
+  - [Vulnearble Code](#vulnearble-code)
+  - [Exploit](#exploit-8)
+- [12 Web Message Information Disclosure](#12-web-message-information-disclosure)
+  - [Vulnerable code:](#vulnerable-code-8)
+  - [Exploit](#exploit-9)
+- [13 CORS Information Disclosure](#13-cors-information-disclosure)
+- [Exploit:](#exploit-10)
+  - [Vulnerable Code](#vulnerable-code-9)
+- [14 CORS CSRF](#14-cors-csrf)
+  - [Exploit:](#exploit-11)
+  - [Vulnerable Code](#vulnerable-code-10)
+- [15 Insecure 2FA implementation.](#15-insecure-2fa-implementation)
+  - [Exploit:](#exploit-12)
+- [16. Cross-Site WebSocket Hijacking](#16-cross-site-websocket-hijacking)
+  - [Exploit](#exploit-13)
+  - [Vulnerable Code](#vulnerable-code-11)
+- [17 WebSocket XSS](#17-websocket-xss)
+  - [Exploit](#exploit-14)
+  - [Vulnerable code](#vulnerable-code-12)
+- [18 ReactJS XSS](#18-reactjs-xss)
+  - [Exploit](#exploit-15)
+  - [Vulnerable Code](#vulnerable-code-13)
+- [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
+  - [Exploit](#exploit-16)
+- [Vulnerable code](#vulnerable-code-14)
+- [20. NoSQL Injection](#20-nosql-injection)
+  - [Exploit](#exploit-17)
+  - [Vulnerable code](#vulnerable-code-15)
+- [21. GraphQL Information Disclosure](#21-graphql-information-disclosure)
+  - [Exploit](#exploit-18)
+  - [Vulnerable Code](#vulnerable-code-16)
+- [22. GraphQL SQLi](#22-graphql-sqli)
+  - [Exploit](#exploit-19)
+  - [Vulnerable code:](#vulnerable-code-17)
+- [23. GraphQL CSRF](#23-graphql-csrf)
+  - [Exploit](#exploit-20)
+  - [Vulnearble code](#vulnearble-code-1)
+- [24. GraphQL IDOR](#24-graphql-idor)
+  - [Exploit](#exploit-21)
+  - [Vulnerable code](#vulnerable-code-18)
+
+<div class="page-break"></div>
+
 ## 1. Command Injection 
 
 Application is using **child_process.exec()** method to run ping on user supplied input your goal is to acheive the RCE.
@@ -14,7 +93,7 @@ Application is concatinating user supplied input to ping command without any san
 google.com; whoami
 ```
 
-### Vulnerable Code:
+### Vulnerable Code
 
 **Route: /routes/app.js**
 
@@ -41,7 +120,7 @@ const ping_post = (req, res) => {
     }
 ```
 
-### Fix: 
+### Fix
 
 Use child_process package method **execFile**  that starts a specific program and takes an array of arguments.
 
@@ -86,7 +165,7 @@ will receive a callbak request on your attacker server.
 
 **Reference:** https://opsecx.com/index.php/2017/02/08/exploiting-node-js-deserialization-bug-for-remote-code-execution/
 
-### Vulnerable code:
+### Vulnerable code
 
 **Request method, endpoint, injection point**
 ```bash
@@ -118,7 +197,7 @@ Do not use unserialize function on untrusted input.
 
 Application is using  weak secret to create JSON web token that can lead to authentication bypass. Your goal is to access the API Key of user **`vulnlabAdmin`**. 
 
-### Exploit:
+### Exploit
 
 1. Get the `authToken` value from the cookie.
 
@@ -170,14 +249,14 @@ function generateAccessToken(username) {
 JWT_SECRET=secret
 ```
 
-### Solution:
+### Fix
 
 Use strong secret to generate JWT
 
 ## 4. IDOR 
 
-Application is loading Notes saved in the user account based on userid supplied in url path your
-goal is to access notes saved in other user account by performing IDOR.
+Application is loading Notes saved in the user account based on the userid supplied in url path your
+goal is to access notes saved in **`vulnlabAdmin`** user account by performing IDOR.
 
 **Request method & endpoint**
 
@@ -185,6 +264,11 @@ goal is to access notes saved in other user account by performing IDOR.
 Request method: GET
 endpoint: /notes/user/:userid
 ```
+### Exploit
+
+1. Go to **`/notes`** and create a note while intercepting request using burpsuite.
+2. Forward the notes saving request and you will see another request to **`/notes/user/:userid`** to load your notes send this request to repeater and guess the userid of user **`vulnlabAdmin`** to access his notes and complete this exercise.
+
 
 ### Vulnerable Code
 
@@ -206,12 +290,24 @@ const userNotes_get = (req, res) => {
 }
 ```
 
-Application is taking userid from the url path and using it to query notes, By passing the userid of other users you can read the notes saved in other user account.
+### Fix
 
+Use id available in **`req`** object to load user notes instead of using user supplied input.
+
+```js
+const userNotes_get = (req, res) => {
+    const userid = req.user.id; // fixed using id from req object returned from authenticateToken middleware  
+    Notes.findAll({ where: { userid: userid } })
+        .then((queryResult) => {
+            res.header("Content-Type", "application/json")
+            res.send(JSON.stringify(queryResult));
+        })
+}
+```
 
 ## 5. XSS
 
-Three different XSS cases are covered in this exercise depending upon the template sanitization and context.
+Three different XSS cases are covered in this exercise depending on the template sanitization and context.
 
 **Route: /routes/app.js**
 
@@ -236,7 +332,7 @@ const xss_lab = (req, res) => {
 ```
 
 
-**Case 1:** User supplied input rendered without any sanitization
+### Case 1: User supplied input rendered without any sanitization
 
 **View: /views/xss.ejs**
 
@@ -249,7 +345,7 @@ const xss_lab = (req, res) => {
 
 Application is rendering user supplied input using **ejs** raw output syntax (`<%- xss1 %>`) which does not encode special characters.
 
-**Case 2:** User supplied input rendered inside script tag
+### Case 2: User supplied input rendered inside script tag
 
 **View: /views/xss.ejs**
 
@@ -265,7 +361,7 @@ var number = <%= xss2 %>;
 In this case application is rendering user supplied input using ejs escape output syntax (<%= xss2 %>) which escapes special characters but the reflection is happening inside the script tag so an attacker
 can execute the XSS attack without using the special characters.
 
-**Case 3:** XSS inside JSON object
+### Case 3: XSS inside JSON object
 
 **View: /views/xss.ejs**
 
@@ -282,8 +378,19 @@ Here application is using `<%-JSON.stringify("{username": xss3})%>` to create a 
 
 ## 6. SSTI
 
-Application is directly concatinating user supplied input into a template then rather then
-passing it as a data this allows attackers to execute arbitrary code on the server.
+Application is directly concatinating user supplied input into a template rather then
+passing it as a data this allows attackers to execute arbitrary code on the server. Your goal is to steal the database credentials from environment variables (`process.env.DB_PASS`, `process.env.DB_USER`).
+
+
+### Exploit
+
+1. Go to **`/ssti`** and click on `Station List`.
+2. You will notice `stationList` value in `op` parameter which is basically a function that gets executed during template rendering to show the list of station now if you change it to `7*7` you will get `49` in response.
+3. To get database credentials from the environment variable pass `process.env.DB_PASS` in op parameter and you will get database password and `process.env.DB_USER` to get database username.
+
+
+
+### Vulnerable Code
 
 **Request method, endpoint, query parameter**
 
@@ -293,10 +400,8 @@ Endpoint: /ssti
 query parameter: op
 ```
 
-**Vulnerable Code**
- 
- **Route: /routes/app.js**
-```
+**Route: /routes/app.js**
+```js
  router.get('/ssti', authenticateToken, vuln_controller.ssti_get);
 ```
 **Controller: /controllers/vuln_controller.js**
@@ -327,7 +432,12 @@ async function ssti_get(req, res){
 
 Application is concatenating user supplied input to SQL query without any validation.
 
-**Vulnerable Code**
+### Exploit
+
+1. Go to `/sqli` and select station from list and click on check while intercepting request using burpsuite.
+2. Add `'` at the end of URL path you will see the SQL error from here you can proceed to get database details.
+
+### Vulnerable Code
 
 **Route: /routes/app.js**
 ```js
@@ -874,7 +984,7 @@ const react_xss_post = (req, res) => {
 ```
 
 
-## 20.  NoSQL Injection
+## 20. NoSQL Injection
 
 Application is using mongodb to handle user notes your goal is to read a note with the title SuperSecretNote by performing NoSQL injection. 
 

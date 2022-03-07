@@ -1,0 +1,69 @@
+]0;md-to-pdf
+  $ md-to-pdf [options] path/to/file.md
+
+  Options:
+
+    -h, --help ............... Output usage information
+    -v, --version ............ Output version
+    -w, --watch .............. Watch the current file(s) for changes
+		--watch-options .......... Options for Chokidar's watch call
+    --basedir ................ Base directory to be served by the file server
+    --stylesheet ............. Path to a local or remote stylesheet (can be passed multiple times)
+    --css .................... String of styles
+    --document-title ......... Name of the HTML Document.
+    --body-class ............. Classes to be added to the body tag (can be passed multiple times)
+    --page-media-type ........ Media type to emulate the page with (default: screen)
+    --highlight-style ........ Style to be used by highlight.js (default: github)
+    --marked-options ......... Set custom options for marked (as a JSON string)
+    --pdf-options ............ Set custom options for the generated PDF (as a JSON string)
+    --launch-options ......... Set custom launch options for Puppeteer
+		--gray-matter-options .... Set custom options for gray-matter
+    --port ................... Set the port to run the http server on
+    --md-file-encoding ....... Set the file encoding for the markdown file
+    --stylesheet-encoding .... Set the file encoding for the stylesheet
+    --as-html ................ Output as HTML instead
+    --config-file ............ Path to a JSON or JS configuration file
+    --devtools ............... Open the browser with devtools instead of creating PDF
+
+  Examples:
+
+  – Convert ./file.md and save to ./file.pdf
+
+    $ md-to-pdf file.md
+
+  – Convert all markdown files in current directory
+
+    $ md-to-pdf ./*.md
+
+  – Convert all markdown files in current directory recursively
+
+    $ md-to-pdf ./**/*.md
+
+  – Convert and enable watch mode
+
+    $ md-to-pdf ./*.md -w
+
+  – Convert and enable watch mode with custom options
+
+    $ md-to-pdf ./*.md --watch --watch-options '{ "atomic": true }'
+
+  – Convert path/to/file.md with a different base directory
+
+    $ md-to-pdf path/to/file.md --basedir path
+
+  – Convert file.md using custom-markdown.css
+
+    $ md-to-pdf file.md --stylesheet custom-markdown.css
+
+  – Convert file.md using the Monokai theme for code highlighting
+
+    $ md-to-pdf file.md --highlight-style monokai
+
+  – Convert file.md using custom page options
+
+    $ md-to-pdf file.md --pdf-options '{ "format": "Letter" }'
+
+  – Convert file.md but save the intermediate HTML instead
+
+    $ md-to-pdf file.md --as-html
+
