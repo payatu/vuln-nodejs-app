@@ -18,7 +18,7 @@ var schema = buildSchema(`
   }
 
   type Mutation {
-      updateProfile(username: String, email: String!, password: String!): String
+      updateProfile(username: String, password: String!): String
   }
 `)
 

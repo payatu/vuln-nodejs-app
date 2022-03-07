@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html>
-  <!doctype html>
-  <html lang="en">
-  
   <head>
       <%- include ('includes/header.ejs') %>
   </head>
@@ -26,17 +23,17 @@
   <input type="submit" value="submit">
 </form>
 <br><br>
-<h4> Exploit 3:</h4><p> xss inside json, here application is using &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create
-json object with user supplied input since it uses &#x3c;%- instead of &#x3c;%= ejs will not encode html charater also JSON.stringify
-will escape double quotes that means we have to find a way to break out of the double quote to do that we will use this 
-payload  &#x3c;/script&#x3e;&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;</p>
+<h4> Exploit 3:</h4><p> XSS inside json object, here application is using &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create a
+json object with user supplied input it uses ejs raw output syntax &#x3c;%- to create a valid json object it does not use &#x3c;%= 
+because it will also encode the double quotes but JSON.stringify will escape the double quotes using backslash that means we have to find 
+a way to break out of the double quote to do that we will use this payload  &#x3c;/script&#x3e;&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;</p>
 <form action="/xss" method="get">
   <input type="text" id="xss3" name="xss3">
   <input type="submit" value="submit">
 </form>
 <% if (xss2 || xss3){%>
 <script>
-var a = <%=xss2 %>;
+var number = <%= xss2 %>;
 var b = <%- JSON.stringify({"username": xss3})%>;
 </script>
 <% }%>

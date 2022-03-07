@@ -7,7 +7,7 @@ const mysql = require('mysql2');
 const { Train, Users, Notes, Org, Wallet } = require('../models/db.js');
 var ejs = require('ejs');
 var html_to_pdf = require('html-pdf-node');
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const md5 = require('md5');
 const twofactor = require('node-2fa');
 const path = require('path');
@@ -137,29 +137,27 @@ const deserialization_get = (req, res) => {
     res.render('deserialization');
 }
 
-
 const save_preference_post = (req, res) => {
     const preference = serialize.unserialize(req.cookies.preference);
     res.send(preference);
 }
 
-const ssti = (req, res) => {
+async function ssti_get(req, res){
     const op = req.query.op;
-    var totalTrains = 'Total Number of Trains: 37';
-    var totalStation = 'Total Number of Station: 4';
+    var totalTrains = await Train.findOne({attributes: [Sequelize.fn("SUM", Sequelize.col("ntrains"))], raw: true})
+                        .then((sumObject) =>{ return JSON.stringify({"total_trains": sumObject[Object.keys(sumObject)[0]]})})
     var stationList = `{"stationList": ["Lucknow", "Mumbai", "Delhi", "Kanpur"]}`
     if (req.query.op) {
-        var template = `Result: <p><%=` + op + `%>`;
+        var template = `Result: <p><%-` + op + `%>`;
     } else {
-        var template = `<a href="/ssti?op=stationList">Station List</a>
+        var template = `
+        <a href="/ssti?op=stationList">Station List</a>
         <br>
-        <a href="/ssti?op=totalTrains">Total Trains</a>
-        <br>
-        <a href="/ssti?op=totalStation">Total Station</a>`;
+        <a href="/ssti?op=totalTrains">Total Station</a>
+        `;
     }
     res.send(ejs.render(template, {
         totalTrains: totalTrains,
-        totalStation: totalStation,
         stationList: stationList
     }));
 }
@@ -183,7 +181,7 @@ const jwt1ApiKey = (req, res) => {
 
 const notes_get = (req, res) => {
     res.render('notes', {
-        username: req.user.username
+        userid: req.user.id
     });
 }
 
@@ -191,21 +189,21 @@ const notes_post = (req, res) => {
     const noteTitle = req.body.noteTitle;
     const noteBody = req.body.noteBody;
     const username = req.user.username;
-    Notes.create({ username: username, noteTitle: noteTitle, noteBody: noteBody })
+    const userid = req.user.id;
+    Notes.create({ userid: userid, username: username, noteTitle: noteTitle, noteBody: noteBody })
         .then((note) => {
             res.send(JSON.stringify(note));
         })
 }
 
 const userNotes_get = (req, res) => {
-    const username = req.params.username;
-    Notes.findAll({ where: { username: username } })
+    const userid = req.params.userid;
+    Notes.findAll({ where: { userid: userid } })
         .then((queryResult) => {
             res.header("Content-Type", "application/json")
             res.send(JSON.stringify(queryResult));
         })
 }
-
 
 const ticket_get = (req, res) => {
     res.render('ticket');
@@ -221,7 +219,6 @@ const generate_ticket_get = (req, res) => {
 }
 
 const ticket_booking_get = (req, res) => {
-
     let options = { path: "test.pdf" };
     let file = { url: `http://localhost:${process.env.HOST_PORT}/ticket/generate_ticket?passenger_name=${req.query.passenger_name}&from_stnt=${req.query.from_stnt}&to_stnt=${req.query.to_stnt}&date=${req.query.date}` };
 
@@ -341,12 +338,12 @@ const myorg_users_get = (req, res) => {
 }
 
 const apitoken_get = (req, res) => {
-    res.render('api-token');
+    res.render('webmessage-api-token');
 }
 
 const apitokenShow_get = (req, res) => {
     const apiToken = req.user.apiToken
-    res.render('api-token-popup', { apiToken });
+    res.render('webmessage-api-token-popup', { apiToken });
 }
 
 const cors_api_token_get = (req, res) => {
@@ -378,6 +375,7 @@ const cors_csrf_edit_password_post = (req, res) => {
         })
 }
 
+// handle Preflight (OPTIONS) request
 const cors_csrf_edit_password_option = (req, res) => {
     if (req.get('origin') !== undefined) {
         res.header("Access-Control-Allow-Origin", req.get('origin'));
@@ -553,6 +551,8 @@ const mongodb_show_notes_post = (req, res) => {
         db.collection('mongodb-notes').find({ username: req.body.username }).toArray()
             .then((notes) => {
                 res.send(notes)
+            }).catch((err) =>{
+                res.status(500).send('Internal error!');
             })
     })
 }
@@ -635,7 +635,7 @@ module.exports = {
     sqli_fixed_get,
     deserialization_get,
     save_preference_post,
-    ssti,
+    ssti_get,
     jwt1_get,
     jwt1ApiKey,
     notes_get,

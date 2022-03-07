@@ -43,7 +43,7 @@ router.get('/deserialization', authenticateToken, vuln_controller.deserializatio
 
 router.post('/save-preference', authenticateToken, vuln_controller.save_preference_post);
 
-router.get('/ssti', authenticateToken, vuln_controller.ssti);
+router.get('/ssti', authenticateToken, vuln_controller.ssti_get);
 
 router.get('/jwt1', authenticateToken, vuln_controller.jwt1_get);
 
@@ -53,7 +53,7 @@ router.route('/notes')
     .get(authenticateToken, vuln_controller.notes_get)
     .post(authenticateToken, vuln_controller.notes_post);
 
-router.get('/notes/:username', authenticateToken, vuln_controller.userNotes_get);
+router.get('/notes/user/:userid', authenticateToken, vuln_controller.userNotes_get);
 
 router.route('/login')
     .get(auth_controller.login_get)
@@ -122,8 +122,7 @@ router.route('/mongodb-notes/show-notes')
 // GraphQL rotuer
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
-    rootValue: vuln_controller.graphqlroot,
-    graphiql: true,
+    rootValue: vuln_controller.graphqlroot
 }))
 
 router.get('/graphql-user-profile', authenticateToken, vuln_controller.graphql_user_profile_get);

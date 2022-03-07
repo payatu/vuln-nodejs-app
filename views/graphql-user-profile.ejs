@@ -11,7 +11,7 @@
         <h2>Graphql SQLI</h2>
         <br>
         <p>Application is trusting data supplied from the API client and using it in a sql query without proper
-            santization your goal is to perform SQL injection.
+            sanitization to display user profile, your goal is to perform SQL injection.
         <div class="row">
             <div class="col-sm-6">
                 <div class="card">
@@ -58,7 +58,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        query: `query loadProfile($username: String!){ user(username: $username){ username email }}`,
+                        query: `query user($username: String!){ user(username: $username){ username email }}`,
                         variables: { username: "<%=username%>" }
                     })
                 })

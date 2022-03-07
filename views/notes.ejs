@@ -12,7 +12,8 @@
 
     <div class='container' style='min-height: 450px'>
         <h2>Notes</h2>
-        <p>Your goal is to access notes saved in <code>vulnlabAdmin</code> account</p>
+        <p>Application is loading Notes saved in user account based on the userid supplied in url path your
+            goal is to access notes saved in <code>vulnlabAdmin</code> account by performing IDOR.
         <div class="row">
             <div class="col-sm-6">
                 <div class="card">
@@ -35,11 +36,11 @@
                              <table class="table">
                                 <thead>
                                   <tr>
-                                        <th scope="col">id</th>
+                                    <th scope="col">id</th>
                                     <th scope="col">title</th>
                                   </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="notesBody">
                                   <tr id="root">
                                   </tr>
                                 </tbody>
@@ -53,12 +54,12 @@
         <h5>
             <pre class="prettyprint">
 
-  const userNotes_get = (req, res)=> {
-    const username = req.params.username;
-    Notes.findAll({where:{username:username}})
-      .then((result)=>{
+  const userNotes_get = (req, res) => {
+  const userid = req.params.userid;
+  Notes.findAll({ where: { userid: userid } })
+    .then((queryResult) => {
       res.header("Content-Type", "application/json")
-      res.send(JSON.stringify(result));
+      res.send(JSON.stringify(queryResult));
     })
   }
                 </pre>
@@ -86,10 +87,11 @@
                 xhr.onreadystatechange = function() {
                 if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                     var data = JSON.parse(xhr.response);
+                    notesBody.innerHTML = '<tr id="root"></tr>'
                     data.forEach(element=>root.insertAdjacentHTML('beforebegin', `<tr><td>${element.id}</td><td>${element.noteTitle}</td></tr>`)); 
                     }
                 }
-                xhr.open('GET', window.location.href+"/<%=username%>");
+                xhr.open('GET', window.location.href+"/user/<%=userid%>");
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhr.withCredentials = true; 
                 xhr.send();

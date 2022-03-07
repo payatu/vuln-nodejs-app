@@ -35,7 +35,9 @@ const Users = sequelize.define('users', {
 const Org = sequelize.define('orgs', { "orgname": Sequelize.STRING, "owner": Sequelize.STRING })
 
 const Notes = sequelize.define('notes', {
-    "username": Sequelize.STRING, "noteTitle": Sequelize.STRING,
+    "userid": Sequelize.INTEGER,
+    "username": Sequelize.STRING, 
+    "noteTitle": Sequelize.STRING,
     "noteBody": Sequelize.STRING
 })
 
@@ -58,7 +60,7 @@ sequelize.sync({ force: true })
             { username: 'vulnlabAdmin', email: 'vulnlabAdmin@vuln.js', password: 'SuperSecurePassword', orgname: '', apiToken: crypto.randomBytes(20).toString('hex'), totpSecret: '' }
         );
         Notes.create(
-            { username: 'vulnlabAdmin', noteTitle: 'ThisIsAdminNote', noteBody: 'SuperSecretNote' }
+            { userid:'1', username: 'vulnlabAdmin', noteTitle: 'ThisIsAdminNote', noteBody: 'SuperSecretNote' }
         );
         Wallet.create(
             {username: "vulnlabAdmin", BTC: "0.00245", ETH: "0.5"}

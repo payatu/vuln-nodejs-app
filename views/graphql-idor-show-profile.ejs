@@ -58,7 +58,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        query: `query loadProfile($userid: Int!){ showProfile(userid: $userid){ username email }}`,
+                        query: `query showProfile($userid: Int!){ showProfile(userid: $userid){ username email }}`,
                         variables: { userid: <%=userid%> }
                     })
                 })
