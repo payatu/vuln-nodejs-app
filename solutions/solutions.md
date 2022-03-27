@@ -35,7 +35,7 @@
 - [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
   - [Exploit](#exploit-7)
     - [Vulnerable Code](#vulnerable-code-7)
-- [10. Event Listener XSS](#10-event-listener-xss)
+- [10. Web Message XSS](#10-web-message-xss)
   - [Exploit](#exploit-8)
   - [Vulnerable Code](#vulnerable-code-8)
 - [11. Web Message CSRF](#11-web-message-csrf)
@@ -268,7 +268,7 @@ endpoint: /notes/user/:userid
 ### Exploit
 
 1. Go to **`/notes`** and create a note while intercepting request using burpsuite.
-2. Forward the notes saving request and you will see another request to **`/notes/user/:userid`** to load your notes send this request to repeater and guess the userid of user **`vulnlabAdmin`** to access his notes and complete this exercise.
+2. Forward the note saving request and you will see another request to **`/notes/user/:userid`** to load your notes send this request to repeater and guess the userid of user **`vulnlabAdmin`** to access his notes and complete this exercise.
 
 
 ### Vulnerable Code
@@ -297,7 +297,7 @@ Use id available in **`req`** object to load user notes instead of using user su
 
 ```js
 const userNotes_get = (req, res) => {
-    const userid = req.user.id; // fixed using id from req object returned from authenticateToken middleware  
+    const userid = req.user.id; // fixed by using user id from req object returned from authenticateToken middleware  
     Notes.findAll({ where: { userid: userid } })
         .then((queryResult) => {
             res.header("Content-Type", "application/json")
@@ -387,7 +387,7 @@ passing it as a data this allows attackers to execute arbitrary code on the serv
 
 1. Go to **`/ssti`** and click on `Station List`.
 2. You will notice `stationList` value in `op` parameter which is basically a function that gets executed during template rendering to show the list of station now if you change it to `7*7` you will get `49` in response.
-3. To get database credentials from the environment variable pass `process.env.DB_PASS` in op parameter and you will get database password and `process.env.DB_USER` to get database username.
+3. To get database credentials from the environment variable pass `process.env.DB_PASS` in op parameter and you will get database password and use `process.env.DB_USER` to get database username.
 
 
 
@@ -544,7 +544,7 @@ Application is receving ticket details from the user then using it to generate H
 received response.
 
 
-## 10. Event Listener XSS
+## 10. Web Message XSS
 
 User edit page has a `addEventListener()` call that listens for the web message and inserts that message to a `<div>` without verifying the origin from where it received the message. 
 
@@ -752,7 +752,7 @@ document.addEventListener('readystatechange', ()=>{
 </html>
 ```
 
-2. Open the HTML file in victim browser and you will see a popup saying password is closed
+1. Open the HTML file in victim browser and you will see a popup "Password update Successfull!".
 
 ### Vulnerable Code
 
@@ -788,7 +788,7 @@ const cors_csrf_edit_password_option = (req, res) => {
     res.send(200);
 }
 
-// handle edit password
+// handle edit password request
 const cors_csrf_edit_password_post = (req, res) => {
     if (req.get('origin') !== undefined) {
         res.header("Access-Control-Allow-Origin", req.get('origin'));
@@ -1122,7 +1122,7 @@ complete query
 
 **Route: /routes/app.js**
 
-```
+```js
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
     rootValue: vuln_controller.graphqlroot 
@@ -1131,7 +1131,7 @@ router.use('/graphql', authenticateToken, graphqlHTTP({
 
 **graphqlroot**
 
-```
+```js
 const graphqlroot = {
     user: graphql_GetUser,   // user query handler
     listUsers: graphql_AllUsers,
@@ -1181,7 +1181,7 @@ query=mutation { updateProfile(username: "hacker", email: "hacker@gmail.com", pa
 
 **Route: /routes/app.js**
 
-```
+```js
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
     rootValue: vuln_controller.graphqlroot 
@@ -1190,7 +1190,7 @@ router.use('/graphql', authenticateToken, graphqlHTTP({
 
 **graphqlroot**
 
-```
+```js
 const graphqlroot = {
     user: graphql_GetUser,
     listUsers: graphql_AllUsers,
@@ -1224,7 +1224,7 @@ Application is trusting data supplied from the API client and using it to show t
 
 **Route: /routes/app.js**
 
-```
+```js
 router.use('/graphql', authenticateToken, graphqlHTTP({
     schema: schema,
     rootValue: vuln_controller.graphqlroot 
@@ -1233,7 +1233,7 @@ router.use('/graphql', authenticateToken, graphqlHTTP({
 
 **graphqlroot**
 
-```
+```js
 const graphqlroot = {
     user: graphql_GetUser,
     listUsers: graphql_AllUsers,
