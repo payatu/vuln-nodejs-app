@@ -34,7 +34,7 @@
   - [Vulnerable code:](#vulnerable-code-6)
 - [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
   - [Exploit](#exploit-7)
-    - [Vulnerable Code](#vulnerable-code-7)
+  - [Vulnerable Code](#vulnerable-code-7)
 - [10. Web Message XSS](#10-web-message-xss)
   - [Exploit](#exploit-8)
   - [Vulnerable Code](#vulnerable-code-8)
@@ -517,7 +517,7 @@ to your web server to receive callback to confirm the SSRF.
 <iframe src="http://yourwebsite.com/asdf"/>
 ```
 
-#### Vulnerable Code
+### Vulnerable Code
 
 **Route: /routes/app.js**
 
