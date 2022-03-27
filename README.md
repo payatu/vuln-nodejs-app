@@ -104,6 +104,10 @@ node server.js
 ```
 You can now access the application at http://localhost:9000
 
+## Solutions
+
+**PDF:** <a href="https://github.com/payatu/vuln-nodejs-app/blob/master/solutions/solutions.pdf">solutions.pdf</a><br/> 
+**Markdown:** <a href="https://github.com/payatu/vuln-nodejs-app/blob/master/solutions/solutions.md">solutions.md</a><br/> 
 
 ## TODO:
 
