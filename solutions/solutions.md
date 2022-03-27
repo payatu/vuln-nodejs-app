@@ -45,7 +45,7 @@
   - [Exploit](#exploit-10)
   - [Vulnerable code:](#vulnerable-code-9)
 - [13 CORS Information Disclosure](#13-cors-information-disclosure)
-- [Exploit:](#exploit-11)
+  - [Exploit:](#exploit-11)
   - [Vulnerable Code](#vulnerable-code-10)
 - [14 CORS CSRF](#14-cors-csrf)
   - [Exploit:](#exploit-12)
@@ -63,7 +63,7 @@
   - [Vulnerable Code](#vulnerable-code-14)
 - [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
   - [Exploit](#exploit-17)
-- [Vulnerable code](#vulnerable-code-15)
+  - [Vulnerable code](#vulnerable-code-15)
 - [20. NoSQL Injection](#20-nosql-injection)
   - [Exploit](#exploit-18)
   - [Vulnerable code](#vulnerable-code-16)
@@ -517,7 +517,6 @@ to your web server to receive callback to confirm the SSRF.
 <iframe src="http://yourwebsite.com/asdf"/>
 ```
 
-
 #### Vulnerable Code
 
 **Route: /routes/app.js**
@@ -659,7 +658,7 @@ Save the following HTML code in a HTML file, host it on your server and send the
 
 `cors-api-token` endpoint is vulnerable to Cross Origin Resource Sharing your goal is to exploit it to steal victim user API Token.
 
-## Exploit:
+### Exploit:
 
 1. Save the following HTML code in a HTML file.
 
@@ -962,7 +961,7 @@ ReactJS provides escape hatch to provide direct access to DOM elements. With dir
 
 2. Use the CSRF to steal other users cookie.
 
-## Vulnerable code
+### Vulnerable code
 
 **Request method, endpoint & parameter**
 
