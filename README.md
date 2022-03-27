@@ -18,7 +18,7 @@
 10. Web message XSS
 11. Web message CSRF
 12. Web message Information Disclosure
-13. CORS information Disclosure
+13. CORS Information Disclosure
 14. CORS CSRF
 15. 2FA Insecure Implementation
 16. Cross-Site WebSocket Hijacking
@@ -30,6 +30,7 @@
 22. GraphQL SQL Injection
 23. GraphQL CSRF
 24. GraphQL IDOR
+
 ## Installation
 
 ### Using docker-compose 
