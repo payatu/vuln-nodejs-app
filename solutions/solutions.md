@@ -380,15 +380,25 @@ Here application is using `<%-JSON.stringify("{username": xss3})%>` to create a 
 ## 6. SSTI
 
 Application is directly concatinating user supplied input into a template rather then
-passing it as a data this allows attackers to execute arbitrary code on the server. Your goal is to steal the database credentials from environment variables (`process.env.DB_PASS`, `process.env.DB_USER`).
+passing it as a data this allows attackers to execute arbitrary code on the server. Your goal is to steal the database credentials from environment variables.
 
 
 ### Exploit
 
-1. Go to **`/ssti`** and click on `Station List`.
-2. You will notice `stationList` value in `op` parameter which is basically a function that gets executed during template rendering to show the list of station now if you change it to `7*7` you will get `49` in response.
-3. To get database credentials from the environment variable pass `process.env.DB_PASS` in op parameter and you will get database password and use `process.env.DB_USER` to get database username.
-
+1. Go to **`/ssti?path=helloworld`**.
+2. You will notice that `helloworld` is displayed in the response, now try ssti polygot payload `${{<%25[%25'"}}%25\.` in the path parameter you will get the following message in the first line of error which suggests that template engine uses `<%, %>` for opening and closing tag one such template engine is ejs.
+   ```
+   Error: Could not find matching close tag for "<%".
+   ```
+3. Let's perform simple multiply using following payload.
+  ```
+  <%25= 7*7%25>
+  ```
+4. And we get `49` in the response.
+5. Time to get database credentials from database for that we will use the following payload
+```
+<%25=JSON.stringify(process.env)%25>
+```
 
 
 ### Vulnerable Code
@@ -398,34 +408,30 @@ passing it as a data this allows attackers to execute arbitrary code on the serv
 ```
 Request method: GET
 Endpoint: /ssti
-query parameter: op
+query parameter: path
 ```
 
 **Route: /routes/app.js**
 ```js
- router.get('/ssti', authenticateToken, vuln_controller.ssti_get);
+router.get('/ssti', authenticateToken, vuln_controller.ssti);
 ```
 **Controller: /controllers/vuln_controller.js**
 
 ```js
-async function ssti_get(req, res){
-    const op = req.query.op;
-    var totalTrains = await Train.findOne({attributes: [Sequelize.fn("SUM", Sequelize.col("ntrains"))], raw: true})
-                        .then((sumObject) =>{ return JSON.stringify({"total_trains": sumObject[Object.keys(sumObject)[0]]})})
-    var stationList = `{"stationList": ["Lucknow", "Mumbai", "Delhi", "Kanpur"]}`
-    if (req.query.op) {
-        var template = `Result: <p><%-` + op + `%>`;
-    } else {
-        var template = `
-        <a href="/ssti?op=stationList">Station List</a>
-        <br>
-        <a href="/ssti?op=totalTrains">Total Station</a>
-        `;
-    }
-    res.send(ejs.render(template, {
-        totalTrains: totalTrains,
-        stationList: stationList
-    }));
+function notFoundPage(input) {
+    if (input == undefined) input = "";
+    var template = `<!DOCTYPE html><html><body>
+    <h1>Error: 404</h1>
+    <b><p>Not Found: /ssti/`+ input + `</p></b></body></html>`
+    var html = ejs.render(template, { name: "Venus" })
+    return html;
+}
+
+// ssti controller
+const ssti = (req, res) => {
+    const user_supplied_path = req.query.path;
+    const html = notFoundPage(user_supplied_path)
+    res.send(html).status(404);
 }
 ```
 

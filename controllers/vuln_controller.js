@@ -142,26 +142,6 @@ const save_preference_post = (req, res) => {
     res.send(preference);
 }
 
-async function ssti_get(req, res){
-    const op = req.query.op;
-    var totalTrains = await Train.findOne({attributes: [Sequelize.fn("SUM", Sequelize.col("ntrains"))], raw: true})
-                        .then((sumObject) =>{ return JSON.stringify({"total_trains": sumObject[Object.keys(sumObject)[0]]})})
-    var stationList = `{"stationList": ["Lucknow", "Mumbai", "Delhi", "Kanpur"]}`
-    if (req.query.op) {
-        var template = `Result: <p><%-` + op + `%>`;
-    } else {
-        var template = `
-        <a href="/ssti?op=stationList">Station List</a>
-        <br>
-        <a href="/ssti?op=totalTrains">Total Station</a>
-        `;
-    }
-    res.send(ejs.render(template, {
-        totalTrains: totalTrains,
-        stationList: stationList
-    }));
-}
-
 const jwt1_get = (req, res) => {
     res.render('jwt1');
 }
@@ -177,6 +157,21 @@ const jwt1ApiKey = (req, res) => {
 
         res.send(apiKeyObject.vulnlabAdmin);
     }
+}
+
+function notFoundPage(input) {
+    if (input == undefined) input = "";
+    var template = `<!DOCTYPE html><html><body>
+    <h1>Error: 404</h1>
+    <b><p>Not Found: /ssti/`+ input + `</p></b></body></html>`
+    var html = ejs.render(template, { name: "Venus" })
+    return html;
+}
+
+const ssti = (req, res) => {
+    const user_supplied_path = req.query.path;
+    const html = notFoundPage(user_supplied_path)
+    res.send(html).status(404);
 }
 
 const notes_get = (req, res) => {
@@ -506,7 +501,7 @@ const react_xss_options = (req, res) => {
 if (process.env.MONGODB_ADMINUSERNAME != '' && process.env.MONGODB_ADMINPASSWORD != '') {
     var dbURL = `mongodb://${process.env.MONGODB_ADMINUSERNAME}:${process.env.MONGODB_ADMINPASSWORD}@${process.env.MONGODB_SERVER}:27017/`;
 } else {
-   var dbURL = 'mongodb://localhost:27017/';
+    var dbURL = 'mongodb://localhost:27017/';
 }
 
 const mongodb_config = { connectTimeoutMS: 2000 };
@@ -551,7 +546,7 @@ const mongodb_show_notes_post = (req, res) => {
         db.collection('mongodb-notes').find({ username: req.body.username }).toArray()
             .then((notes) => {
                 res.send(notes)
-            }).catch((err) =>{
+            }).catch((err) => {
                 res.status(500).send('Internal error!');
             })
     })
@@ -565,7 +560,7 @@ const graphqlroot = {
     showProfile: graphql_ShowProfile
 }
 
-async function graphql_GetUser(arg){
+async function graphql_GetUser(arg) {
     const username = arg.username
     const q = "SELECT * FROM users where username='" + username + "';";
     await con.connect()
@@ -573,15 +568,15 @@ async function graphql_GetUser(arg){
     return userdata[0][0]
 }
 
-async function graphql_AllUsers(){
+async function graphql_AllUsers() {
     const q = "SELECT username, email from users;"
-    await con.connect() 
+    await con.connect()
     const userdata = await con.promise().query(q)
     console.log(userdata[0][0])
     return userdata[0]
 }
 
-async function graphql_UpdateProfile(args, req){
+async function graphql_UpdateProfile(args, req) {
     const updateQuery = `UPDATE users SET email='${args.email}', password='${md5(args.password)}' WHERE username = '${req.user.username}';`
     await con.connect()
     const updateResult = await con.promise().query(updateQuery)
@@ -589,7 +584,7 @@ async function graphql_UpdateProfile(args, req){
     return "Update Successfull!"
 }
 
-async function graphql_ShowProfile(args){
+async function graphql_ShowProfile(args) {
     const userid = args.userid
     const q = "SELECT * FROM users where id='" + userid + "';";
     await con.connect()
@@ -626,6 +621,7 @@ module.exports = {
     sqli_get,
     xxe_get,
     xxe_comment,
+    ssti,
     auth_get,
     sitetoken_get,
     dashboard_get,
@@ -635,7 +631,6 @@ module.exports = {
     sqli_fixed_get,
     deserialization_get,
     save_preference_post,
-    ssti_get,
     jwt1_get,
     jwt1ApiKey,
     notes_get,

@@ -13,6 +13,8 @@ router.route('/register')
 
 router.get('/xss', authenticateToken, vuln_controller.xss_lab);
 
+router.get('/ssti', authenticateToken, vuln_controller.ssti);
+
 router.route('/ping')
     .get(authenticateToken, vuln_controller.ping_get)
     .post(authenticateToken, vuln_controller.ping_post);
@@ -42,8 +44,6 @@ router.get('/logout', authenticateToken, auth_controller.logout_get);
 router.get('/deserialization', authenticateToken, vuln_controller.deserialization_get);
 
 router.post('/save-preference', authenticateToken, vuln_controller.save_preference_post);
-
-router.get('/ssti', authenticateToken, vuln_controller.ssti_get);
 
 router.get('/jwt1', authenticateToken, vuln_controller.jwt1_get);
 
