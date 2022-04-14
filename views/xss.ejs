@@ -1,41 +1,69 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <%- include ('includes/header.ejs') %>
-  </head>
-  
-  <body>
-      <%- include ('includes/navigation.ejs') %>
-      <div class='container' style='min-height: 450px'>
-<h4> Exploit 1:</h4><p> User supplied input rendered without santizing.</p>
 
-<form action="/xss" method="get">
-  <input type="text" id="name" name="xss1"><br><br>
-  <input type="submit" value="Submit">
-</form>
-<% if (xss1){%>
-<br> <h5> Welcome <%- xss1 %></h5>
-<% }%>
-<br><br>
-<h4> Exploit 2:</h4><p>HTML encoding is used but user supplied input is rendered inside script tag.</p>
-<form action="/xss" method="get">
-  <input type="text" id="xss2" name="xss2">
-  <input type="submit" value="submit">
-</form>
-<br><br>
-<h4> Exploit 3:</h4><p> XSS inside json object, here application is using &#x3c;%-JSON.stringify("{username": xss3})%&#x3e; to create a
-json object with user supplied input it uses ejs raw output syntax &#x3c;%- to create a valid json object it does not use &#x3c;%= 
-because it will also encode the double quotes but JSON.stringify will escape the double quotes using backslash that means we have to find 
-a way to break out of the double quote to do that we will use this payload  &#x3c;/script&#x3e;&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;</p>
-<form action="/xss" method="get">
-  <input type="text" id="xss3" name="xss3">
-  <input type="submit" value="submit">
-</form>
-<% if (xss2 || xss3){%>
-<script>
-var number = <%= xss2 %>;
-var b = <%- JSON.stringify({"username": xss3})%>;
-</script>
-<% }%>
+<head>
+  <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+  <%- include ('includes/navigation.ejs') %>
+  <div class='container' style='min-height: 450px'>
+    <div class="card" style="width: 100%">
+      <div class="card-body">
+        <h5 class="card-title">Case 1 </h5>
+        <p>User supplied input rendered without santizing.</p>
+        <p class="card-text">
+        <form action="/xss" method="get">
+          <input class="form-control" type="text" id="name" name="xss1"><br>
+          <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+        <% if (xss1){%>
+        <br>
+        <h5> Welcome <%- xss1 %></h5>
+        <% }%>
+        </p>
+      </div>
+    </div>
+    <br><br>
+    <div class="card" style="width: 100%">
+      <div class="card-body">
+        <h5 class="card-title">Case 2</h5>
+        <p>HTML encoding is used but user supplied input is rendered inside script tag.</p>
+        <p class="card-text">
+        <form action="/xss" method="get">
+          <input class="form-control" type="text" id="xss2" name="xss2"><br>
+          <input class="btn btn-primary" type="submit" value="submit">
+        </form>
+        </p>
+      </div>
+    </div>
+    <br><br>
+    <div class="card" style="width: 100%">
+      <div class="card-body">
+        <h5 class="card-title">Case 3</h5>
+        <p>XSS inside json object, In this case application is using <code><b>&#x3c;%-JSON.stringify("{username": xss3})%&#x3e;</b></code> to create a
+          json object with user supplied input it is using ejs raw output syntax &#x3c;%- to create a valid json object it does
+          not use &#x3c;%=
+          because it will also encode the double quotes but JSON.stringify will escape the double quotes using backslash
+          that means we have to find
+          a way to break out of the double quote to do that we will use this payload
+          &#x3c;/script&#x3e;&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;</p>
+        <p class="card-text">
+          <form action="/xss" method="get">
+            <input class="form-control" type="text" id="xss3" name="xss3"><br>
+            <input class="btn btn-primary" type="submit" value="submit">
+          </form>
+        </p>
+      </div>
+    </div>
+    <% if (xss2 || xss3){%>
+  </div>
+
+  <script>
+    var number = <%= xss2 %>;
+    var b = <%- JSON.stringify({ "username": xss3 }) %>;
+  </script>
+  <% }%>
 </body>
+
 </html>

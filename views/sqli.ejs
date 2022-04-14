@@ -57,6 +57,10 @@
         </h5>
     <script>
         function submit() {
+            if (val2.value == ""){
+                alert("Please select destination station")
+                return
+            } 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {

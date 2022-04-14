@@ -15,11 +15,11 @@
         <p>Your goal is to add yourself in a victim organization by exploiting web messages.</p>
         <div class="card" style="width: 50%">
             <div class="card-body">
-                <h5 class="card-title">Create Organization</h5>
+                <h5 class="card-title" id="orgcard">Create Organization</h5>
                 <p class="card-text"><input class="form-control" id="org" type="text" value="" placeholder="Org name">
                 </p>
                 <input type="submit" id="createOrg" value="Create" onclick="createOrg()" class="btn btn-primary">
-                <div id="createOrgMessage"></div>
+                <div id="createOrgMessage" style="color: green"></div>
                 <hr>
                 <h5 class="card-title">Org Users</h5>
                 <div id="orgUsers"></div>
@@ -35,7 +35,7 @@
                 text-decoration: underline;
                 cursor: pointer;">
                 <br><br>
-                <div id="userAddMessage"></div>
+                <div id="userAddMessage" style="color: green;"></div>
             </div>
         </div>
         <br><br>
@@ -47,6 +47,8 @@
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        document.getElementById('orgcard').innerHTML = "Your Organization";
+                        document.getElementById('org').setAttribute('readonly', 'true');
                         document.getElementById('createOrg').setAttribute('hidden', true)
                         document.getElementById("createOrgMessage").innerHTML = "Org successfully created";
 
@@ -78,6 +80,7 @@
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
                         document.getElementById('org').value = xhr.responseText;
+                        document.getElementById('orgcard').innerHTML = "Your Organization";
                         document.getElementById('org').setAttribute('readonly', 'true');
                         document.getElementById('createOrg').setAttribute('hidden', true)
                     }

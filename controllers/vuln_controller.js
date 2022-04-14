@@ -76,6 +76,7 @@ const sqli_check_train_get = (req, res) => {
     const from = req.params.from;
     const to = req.params.to;
     const q = "SELECT ntrains FROM trains where from_stnt='" + from + "' and to_stnt='" + to + "';";
+    res.header("Content-Type", "application/json")
     con.connect(function (err) {
         if (err) throw err;
         con.query(q, (err, results) => {
@@ -163,7 +164,7 @@ function notFoundPage(input) {
     if (input == undefined) input = "";
     var template = `<!DOCTYPE html><html><body>
     <h1>Error: 404</h1>
-    <b><p>Not Found: /ssti/`+ input + `</p></b></body></html>`
+    <b><p>Page Not Found: /ssti/`+ input + `</p></b></body></html>`
     var html = ejs.render(template, { name: "Venus" })
     return html;
 }
@@ -214,7 +215,7 @@ const generate_ticket_get = (req, res) => {
 }
 
 const ticket_booking_get = (req, res) => {
-    let options = { path: "test.pdf" };
+    let options = { path: "ticket.pdf" };
     let file = { url: `http://localhost:${process.env.HOST_PORT}/ticket/generate_ticket?passenger_name=${req.query.passenger_name}&from_stnt=${req.query.from_stnt}&to_stnt=${req.query.to_stnt}&date=${req.query.date}` };
 
     html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
@@ -226,7 +227,6 @@ const ticket_booking_get = (req, res) => {
 const user_edit_get = (req, res) => {
     Users.findOne({ where: { username: req.user.username } })
         .then((user) => {
-            console.log(user);
             res.render('user-edit', {
                 username: user.username,
                 email: user.email
@@ -270,7 +270,6 @@ const add_user_get = (req, res) => {
             const orgname = queryResult.orgname;
             Users.findAll({ where: { username: { [Op.ne]: req.user.username } }, attributes: ['username'] })
                 .then((users) => {
-                    console.log(users);
                     res.render('add-user', {
                         orgname,
                         users
@@ -285,7 +284,6 @@ const add_user_get = (req, res) => {
 const add_user_post = (req, res) => {
     Org.findOne({ attributes: ['orgname'], where: { owner: req.user.username } })
         .then((queryResult) => {
-            console.log(queryResult.orgname);
             Users.update({ orgname: queryResult.orgname }, { where: { username: req.body.user } })
                 .then((updateResult) => {
                     res.send('User added!')
@@ -297,7 +295,6 @@ const add_user_post = (req, res) => {
 const myorg_get = (req, res) => {
     Org.findOne({ where: { owner: req.user.username } })
         .then((queryResult) => {
-            console.log(queryResult)
             if (!queryResult.orgname == '') {
                 res.send(queryResult.orgname);
             } else {
@@ -387,7 +384,6 @@ const totp_setup_get = (req, res) => {
     if (req.user.totpSecret == '') {
         const newSecret = twofactor.generateSecret({ name: "vuln-nodejs-app", account: req.user.email });
         tmp_totpSecret[req.user.username] = newSecret.secret;
-        console.log(tmp_totpSecret)
         res.render('totp', {
             qr: newSecret.qr
         })
@@ -406,7 +402,6 @@ const totp_setup_post = (req, res) => {
         res.status(400).send("Unauthorized")
     } else {
         const verification_Token = twofactor.generateToken(tmp_totpSecret[username]);
-        console.log(verification_Token)
         const verify = twofactor.verifyToken(tmp_totpSecret[username], req.body.totp_verify)
         if (verify != null) {
             if (verify.delta == '0') {
@@ -481,7 +476,6 @@ const react_xss_get = (req, res) => {
 }
 
 const react_xss_post = (req, res) => {
-    console.log(req);
     res.header("Access-Control-Allow-Origin", req.get('origin'));
     res.header("Access-Control-Allow-Credentials", 'true');
     res.send({ name: req.body.name, email: req.body.email, website: req.body.website });
@@ -533,7 +527,6 @@ const mongodb_save_notes_post = (req, res) => {
         dbo = db.db('vuln_nodejs_app');
         dbo.collection('mongodb-notes').insertOne(noteObj, (err, result) => {
             if (err) return res.status(500).send('Internal error!');
-            console.log("Note saved")
             res.send({ "success": "true" })
         })
     })
@@ -572,7 +565,6 @@ async function graphql_AllUsers() {
     const q = "SELECT username, email from users;"
     await con.connect()
     const userdata = await con.promise().query(q)
-    console.log(userdata[0][0])
     return userdata[0]
 }
 

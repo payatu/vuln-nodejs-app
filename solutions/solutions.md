@@ -35,13 +35,13 @@
 - [9. SSRF via PDF generator](#9-ssrf-via-pdf-generator)
   - [Exploit](#exploit-7)
   - [Vulnerable Code](#vulnerable-code-7)
-- [10. Web Message XSS](#10-web-message-xss)
+- [10. postMessage XSS](#10-postmessage-xss)
   - [Exploit](#exploit-8)
   - [Vulnerable Code](#vulnerable-code-8)
-- [11. Web Message CSRF](#11-web-message-csrf)
+- [11. postMessage CSRF](#11-postmessage-csrf)
   - [Exploit](#exploit-9)
   - [Vulnearble Code](#vulnearble-code)
-- [12 Web Message Information Disclosure](#12-web-message-information-disclosure)
+- [12 Information Disclosure using addEventListener](#12-information-disclosure-using-addeventlistener)
   - [Exploit](#exploit-10)
   - [Vulnerable code:](#vulnerable-code-9)
 - [13 CORS Information Disclosure](#13-cors-information-disclosure)
@@ -549,7 +549,7 @@ Application is receving ticket details from the user then using it to generate H
 received response.
 
 
-## 10. Web Message XSS
+## 10. postMessage XSS
 
 User edit page has a `addEventListener()` call that listens for the web message and inserts that message to a `<div>` without verifying the origin from where it received the message. 
 
@@ -582,7 +582,7 @@ window.addEventListener("message", function(event){
 ```
 
 
-## 11. Web Message CSRF
+## 11. postMessage CSRF
 
 Organization Management page has a functionality to add user in the org when org owner clicks on the `Add Users` button it opens a new popup window then the org owner selects a user from the list and clicks on the `Add` button this button posts a message using `postMessage()` to the tab which opened it then the opener tab receives the selected username using `addEventListener()` and sends the HTTP request to add that user in the org. Here opener tab does not verifies the origin from which it received the message which means any origin can send a arbitrary username using `postMessage()` and that username will be added to the organisation.
 
@@ -627,7 +627,7 @@ window.addEventListener('message', function (event) {
   })
 ```
 
-## 12 Web Message Information Disclosure
+## 12 Information Disclosure using addEventListener
 
 In this exercise you will learn how insecure use of `postMessage` can be used to steal the sensitive information, `api-token` has a button show when you click on it, it will open a new popup window which will fetch the user API token and send it to the opener window using postmessage, Since it sends the message to the opener window without specifically specifing the origin, An attacker domain which opens the `/api-token/show` will be able to receive the API token.
 
