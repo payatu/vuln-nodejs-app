@@ -12,6 +12,7 @@ const md5 = require('md5');
 const twofactor = require('node-2fa');
 const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
+const fs = require('fs');
 
 var con = mysql.createConnection({
     database: process.env.DB_NAME,
@@ -110,6 +111,7 @@ const xxe_comment = (req, res) => {
     const parsecomment = libxmljs.parseXmlString(rawcomment, { noent: true, noblanks: true });
     var comment = parsecomment.get('//content');
     comment = comment.text();
+    // Save comment to database
     res.send(comment);
 }
 
@@ -188,7 +190,7 @@ const notes_post = (req, res) => {
     const userid = req.user.id;
     Notes.create({ userid: userid, username: username, noteTitle: noteTitle, noteBody: noteBody })
         .then((note) => {
-            res.send(JSON.stringify(note));
+            res.header("Content-Type", "application/json").send(JSON.stringify(note));
         })
 }
 
@@ -605,6 +607,90 @@ const graphql_idor_get = (req, res) => {
     })
 }
 
+const svg_xss_get = (req, res) => {
+    var profilePic = req.user.profilePic
+    if (profilePic != "default.png"){
+        var profilePic = `${req.user.username}/${req.user.profilePic}`
+    }
+    res.render('svg-xss', {
+        profilePic: profilePic
+    })
+}
+
+// clean upload directory
+const ud = __dirname + '/../assets/uploads/'
+fs.readdir(ud, (err, files) => {
+    if (err) {
+        throw err;
+    }
+    files.forEach(file => {
+        const fileDir = path.join(ud, file);
+        if (file !== 'default.png') {
+            fs.rmdirSync(fileDir, {recursive: true}, (err)=>{
+                throw err;
+            });
+        }
+    });
+});
+
+const svg_xss_fileupload_post = (req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+    const profilePic = req.files.profilePic;
+    const profilePicName = profilePic.name
+    const profilePicExtension = path.extname(profilePicName)
+    // const profilePicName = req.user.username + profilePicExtension
+    const allowedExtension = ['.png', '.jpg', '.jpeg', '.svg']
+    if (!allowedExtension.includes(profilePicExtension)) {
+        return res.status(422).send('Only .PNG,.JPEG,.SVG files are allowed')
+    }
+    // Use the mv() method to place the file somewhere on your server
+    const uploadDir = __dirname + `/../assets/uploads/${req.user.username}/`;
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+    }
+    const uploadPath = uploadDir + profilePicName
+    profilePic.mv(uploadPath, function (err) {
+        if (err)
+            return res.status(500).send(err);
+        Users.update({ profilePic: profilePicName }, { where: { username: req.user.username } })
+            .then((msg) => {
+                res.redirect('/svg-xss');
+            })
+            .catch((err) => {
+                res.status(500).send(err)
+            })
+    })
+}
+
+const jsonp_injection_get = (req, res)=>{
+    Wallet.findOne({ where: { username: req.user.username } }, { attributes: ['BTC', 'ETH'] })
+    .then((crypto_balance) => {
+        res.render('jsonp-injection', {
+            BTC: crypto_balance.BTC,
+            ETH: crypto_balance.ETH
+        });
+    })
+}
+
+const jsonp_wallet_get = (req, res)=>{
+    Wallet.findOne({where:{username: req.user.username}}, {attributes:['BTC', 'ETH']})
+    .then((crypto_balance)=>{
+        const bitcoin_quantity = crypto_balance.BTC;
+        const ethereum_quantity = crypto_balance.ETH;
+        const request = require('request')
+        request('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd', {json: true}, (err, response, body)=>{
+            if (err) { return console.log(err); }
+            const bitcoin_usd_value = bitcoin_quantity * body.bitcoin.usd + Math.floor(Math.random() * 100);
+            const ethereum_usd_value = ethereum_quantity * body.ethereum.usd + Math.floor(Math.random() * 100);
+            const total_usd_value = bitcoin_usd_value + ethereum_usd_value + Math.floor(Math.random() * 100);
+            const data = {username: req.user.username, btc: bitcoin_usd_value, eth: ethereum_usd_value, total: total_usd_value}
+            res.jsonp(data)
+        }) 
+    })
+}
+
 module.exports = {
     app_index,
     xss_lab,
@@ -663,5 +749,9 @@ module.exports = {
     graphqlroot,
     graphql_information_disclosure_get,
     graphql_update_profile_get,
-    graphql_idor_get
+    graphql_idor_get,
+    svg_xss_get,
+    svg_xss_fileupload_post,
+    jsonp_injection_get,
+    jsonp_wallet_get
 }

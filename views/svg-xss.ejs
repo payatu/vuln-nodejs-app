@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+
+    <div class='container' style='min-height: 450px'>
+        <h2>XSS using SVG file upload</h2>
+        <br>
+        <p>Application allow users to upload .svg file as a profile picture your goal is to steal other users
+            information by using XSS.
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Profile Picture</h5>
+                        <p class="card-text"><img src="/uploads/<%=profilePic%>"></p>
+                        <p class="card-text">
+                        <form ref='uploadForm' id='uploadForm' action='/svg-xss' method='post'
+                            encType='multipart/form-data'><input type='file' name='profilePic' /><input type='submit'
+                                value='Upload!'/>
+                            <p style="font-size: 10px;">Only .png,.jpeg,.svg files are allowed </p></form>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+</body>
+
+</html>

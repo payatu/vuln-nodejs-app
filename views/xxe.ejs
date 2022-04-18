@@ -10,11 +10,14 @@
         <h2>XXE Lab</h2>
         <br>
         <p>Application is using <code class="highlighter-rouge">libxmljs</code> for parsing xml which allows parsing of external entities if  <code class="highlighter-rouge">noent</code> flag is set to  <code class="highlighter-rouge">true</code>, your goal is to read <b>/etc/passwd</b> file.</p>
-        <div class="card" style="width: 50%">
+        <div class="card" style="width: 100%">
             <div class="card-body">
-                <h5 class="card-title">Comment</h5>
-                <p class="card-text">Your Comment:<pre id="user-comment"></pre>
-                <textarea id="comment" rows="8" cols="50"></textarea></p>
+                <h3 class="card-title">Blog: Lorem Ipsum</h4><br>
+                <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non omnis blanditiis consequuntur. Placeat nobis quaerat esse! Maiores molestias quam at adipisci. Hic sequi qui tempore consectetur aliquid quisquam. Rem, illo. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, ab qui dolore et facilis aperiam? Atque quasi repellendus facilis, quibusdam, reiciendis quae unde quia neque quaerat eveniet, ducimus iste mollitia. Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla optio expedita error dolores et corporis ratione, molestiae minus voluptates rerum, ut non distinctio eaque commodi earum repellendus, temporibus molestias! Ipsa!</p>
+                <br>
+                <p class="card-text"><b>Comments:</b>
+                <pre id="user-comment"></pre>
+                <textarea id="comment" rows="2" cols="50"></textarea></p>
                 <input type="submit" id="postcomment" value="Send" onclick="postcomment()" class="btn btn-primary">
             </div>
         </div>
@@ -44,7 +47,7 @@ function postcomment(){
       document.getElementById('comment').value = ''
     }
   }
-  data = 'comment=<?xml version="1.0" encoding="UTF-8"?><root><comment><content>'+comment+'</content></comment></root>'
+  data = 'comment=<comment><content>'+comment+'</content></comment>'
   xhr.open('POST', window.location.origin+'/comment', true); 
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   xhr.withCredentials = true; 

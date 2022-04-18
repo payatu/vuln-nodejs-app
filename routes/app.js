@@ -5,6 +5,7 @@ const auth_controller = require('../controllers/auth_controller');
 const { authenticateToken } = require('../controllers/auth_controller');
 const { schema }  = require('../models/graphql-schema')
 const { graphqlHTTP } = require('express-graphql')
+
 router.get('/', authenticateToken, vuln_controller.app_index);
 
 router.route('/register')
@@ -132,5 +133,13 @@ router.get('/graphql-information-disclosure', authenticateToken, vuln_controller
 router.get('/graphql-update-profile', authenticateToken, vuln_controller.graphql_update_profile_get);
 
 router.get('/graphql-idor-show-profile', authenticateToken, vuln_controller.graphql_idor_get);
+
+router.route('/svg-xss')
+    .get(authenticateToken, vuln_controller.svg_xss_get)
+    .post(authenticateToken, vuln_controller.svg_xss_fileupload_post);
+
+router.get('/jsonp-injection', authenticateToken, vuln_controller.jsonp_injection_get);
+
+router.get('/jsonp-injection/wallet-usd-balance', authenticateToken, vuln_controller.jsonp_wallet_get);
 
 module.exports = router;
