@@ -148,14 +148,14 @@ Available in markdown and pdf format.
 <br>
 <h2>Contribution</h2>
 
-Contributions are always appreciated and you contribute in this project by following ways:
+Contributions are always appreciated and you can contribute in this project by following ways:
 
 - By adding more exercises.
 - By reporting issues or by solving open issues.
 - By making pull request it can be for anything (UI, New Feature, Fixing mistyped words etc) 
 - Don't have time to code but have an idea of exercise open a issue and we will implement it.
 - By spreading the word about this project.
-- By doing write-up of exercise we will add your writeup in community write-ups section.
+- By doing write-up of exercise we will add your write-up in community writeups section.
 
 <h2> TODO: </h2>
 
