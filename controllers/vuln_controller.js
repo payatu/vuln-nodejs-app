@@ -640,7 +640,6 @@ const svg_xss_fileupload_post = (req, res) => {
     const profilePic = req.files.profilePic;
     const profilePicName = profilePic.name
     const profilePicExtension = path.extname(profilePicName)
-    // const profilePicName = req.user.username + profilePicExtension
     const allowedExtension = ['.png', '.jpg', '.jpeg', '.svg']
     if (!allowedExtension.includes(profilePicExtension)) {
         return res.status(422).send('Only .PNG,.JPEG,.SVG files are allowed')

