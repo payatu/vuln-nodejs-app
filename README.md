@@ -72,7 +72,7 @@ Vulnerable NodeJS application is developed for web application penetration teste
 1. Clone the repository.
 
 ```bash
-git clone https://github.com/tauh33dkhan/vuln-nodejs-app.git
+git clone https://github.com/payatu/vuln-nodejs-app.git
 cd ./vuln-nodejs-app
 ```
 2. Download and build the image.
@@ -92,7 +92,7 @@ access the application http://localhost:9000
 1. Clone the repository.
 
 ```bash
-git clone https://github.com/tauh33dkhan/vuln-nodejs-app.git
+git clone https://github.com/payatu/vuln-nodejs-app.git
 cd ./vuln-nodejs-app
 ```
 
