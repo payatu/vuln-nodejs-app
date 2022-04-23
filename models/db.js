@@ -74,7 +74,7 @@ sequelize.sync({ force: true })
             email: 'vulnlabAdmin@vuln.js',
             password: 'SuperSecurePassword',
             orgname: '',
-            apiToken: crypto.randomBytes(20).toString('hex'),
+            apiToken:"YouHaveCompletedTheExcercise",
             totpSecret: '',
             profilePic: 'default.png' }
         );

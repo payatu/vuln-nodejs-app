@@ -148,18 +148,9 @@ const save_preference_post = (req, res) => {
 const jwt1_get = (req, res) => {
     res.render('jwt1');
 }
-// user for BAC lab
-var apiKeyObject = { "vulnlabAdmin": "YouHaveCompletedTheExcercise" };
 
 const jwt1ApiKey = (req, res) => {
-    const username = req.user.username;
-    // in real application they will fetch this information from database.
-    if (!(username in apiKeyObject)) {
-        res.send("8992f664e4829c4e4d5e477e0c619f5c");
-    } else {
-
-        res.send(apiKeyObject.vulnlabAdmin);
-    }
+    res.send(req.user.apiToken);
 }
 
 function notFoundPage(input) {

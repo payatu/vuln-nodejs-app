@@ -17,7 +17,7 @@ Vulnerable NodeJS application is developed for web application penetration teste
   - Secure code review:  Manually install the application this will allow you to use debugger while solving the exercises and will help you in finding vulnerabilities in application code.
   - Developers: Identify vulnerabilities in application code & try to fix them.
 
-<h2>What technologies, tools and design pattern are used in this application?</h2>
+<h2>Tech Stack</h2>
 
 - NodeJS
 - Application design pattern: MVC
@@ -155,7 +155,7 @@ Contributions are always appreciated and you can contribute in this project by f
 - By making pull request it can be for anything (UI, New Feature, Fixing mistyped words etc) 
 - Don't have time to code but have an idea of exercise open a issue and we will implement it.
 - By spreading the word about this project.
-- By doing write-up of exercise we will add your write-up in community writeups section.
+- By doing write-up of exercise we will add your writeup in community write-ups section.
 
 <h2> TODO: </h2>
 
