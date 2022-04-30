@@ -353,7 +353,7 @@ const cors_csrf_edit_password_post = (req, res) => {
     if (req.body.password == '' || req.body.password == undefined || req.body.password == null) return res.sendStatus('400');
     Users.update({ password: md5(req.body.password) }, { where: { username: req.user.username } })
         .then((queryResults) => {
-            res.send("Password update Successfull!");
+            res.send("Password update Successful!");
         })
         .catch((err) => {
             res.send('Unexpected error occured');
@@ -566,7 +566,7 @@ async function graphql_UpdateProfile(args, req) {
     await con.connect()
     const updateResult = await con.promise().query(updateQuery)
     const updateStatus = JSON.stringify(updateResult[0].affectedRows) // returns update status
-    return "Update Successfull!"
+    return "Update Successful!"
 }
 
 async function graphql_ShowProfile(args) {

