@@ -64,6 +64,7 @@ Vulnerable NodeJS application is developed for web application penetration teste
 24. GraphQL IDOR
 25. XSS using SVG file uplaod
 26. JSONP Injection
+27. NoSQL Javascript Injection
 
 <h2> Installation </h2>
 
