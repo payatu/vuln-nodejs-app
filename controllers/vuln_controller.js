@@ -502,6 +502,12 @@ MongoClient.connect(dbURL, mongodb_config, (err, db) => {
     dbo.collection('mongodb-notes').insertOne({ username: "SuperSecretUser", noteTitle: "SuperSecretNote", noteBody: "YOU HAVE SOLVED THE CHALLENGE" }, (err, result) => {
         if (err) return console.log('Internal Error: unable to insert data into mongodb-notes collection');
     })
+    dbo.dropCollection('secret', (err, deleted) => {
+        if (deleted) console.log('Dropping old mongodb collection')
+    })
+    dbo.collection('secret').insertOne({ password: "SuperSecretPassword!!", flag: "$flag{You_have_solved_this_exercise}" }, (err, result) => {
+        if (err) return console.log('Internal Error: unable to insert data into mongodb-notes collection');
+    })
 })
 
 const mongodb_notes_get = (req, res) => {
@@ -600,7 +606,7 @@ const graphql_idor_get = (req, res) => {
 
 const svg_xss_get = (req, res) => {
     var profilePic = req.user.profilePic
-    if (profilePic != "default.png"){
+    if (profilePic != "default.png") {
         var profilePic = `${req.user.username}/${req.user.profilePic}`
     }
     res.render('svg-xss', {
@@ -617,7 +623,7 @@ fs.readdir(ud, (err, files) => {
     files.forEach(file => {
         const fileDir = path.join(ud, file);
         if (file !== 'default.png') {
-            fs.rmdirSync(fileDir, {recursive: true}, (err)=>{
+            fs.rmdirSync(fileDir, { recursive: true }, (err) => {
                 throw err;
             });
         }
@@ -654,30 +660,48 @@ const svg_xss_fileupload_post = (req, res) => {
     })
 }
 
-const jsonp_injection_get = (req, res)=>{
+const jsonp_injection_get = (req, res) => {
     Wallet.findOne({ where: { username: req.user.username } }, { attributes: ['BTC', 'ETH'] })
-    .then((crypto_balance) => {
-        res.render('jsonp-injection', {
-            BTC: crypto_balance.BTC,
-            ETH: crypto_balance.ETH
-        });
-    })
+        .then((crypto_balance) => {
+            res.render('jsonp-injection', {
+                BTC: crypto_balance.BTC,
+                ETH: crypto_balance.ETH
+            });
+        })
 }
 
-const jsonp_wallet_get = (req, res)=>{
-    Wallet.findOne({where:{username: req.user.username}}, {attributes:['BTC', 'ETH']})
-    .then((crypto_balance)=>{
-        const bitcoin_quantity = crypto_balance.BTC;
-        const ethereum_quantity = crypto_balance.ETH;
-        const request = require('request')
-        request('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd', {json: true}, (err, response, body)=>{
-            if (err) { return console.log(err); }
-            const bitcoin_usd_value = bitcoin_quantity * body.bitcoin.usd + Math.floor(Math.random() * 100);
-            const ethereum_usd_value = ethereum_quantity * body.ethereum.usd + Math.floor(Math.random() * 100);
-            const total_usd_value = bitcoin_usd_value + ethereum_usd_value + Math.floor(Math.random() * 100);
-            const data = {username: req.user.username, btc: bitcoin_usd_value, eth: ethereum_usd_value, total: total_usd_value}
-            res.jsonp(data)
-        }) 
+const jsonp_wallet_get = (req, res) => {
+    Wallet.findOne({ where: { username: req.user.username } }, { attributes: ['BTC', 'ETH'] })
+        .then((crypto_balance) => {
+            const bitcoin_quantity = crypto_balance.BTC;
+            const ethereum_quantity = crypto_balance.ETH;
+            const request = require('request')
+            request('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd', { json: true }, (err, response, body) => {
+                if (err) { return console.log(err); }
+                const bitcoin_usd_value = bitcoin_quantity * body.bitcoin.usd + Math.floor(Math.random() * 100);
+                const ethereum_usd_value = ethereum_quantity * body.ethereum.usd + Math.floor(Math.random() * 100);
+                const total_usd_value = bitcoin_usd_value + ethereum_usd_value + Math.floor(Math.random() * 100);
+                const data = { username: req.user.username, btc: bitcoin_usd_value, eth: ethereum_usd_value, total: total_usd_value }
+                res.jsonp(data)
+            })
+        })
+}
+
+const nosql_javascript_injection_get = (req, res) => {
+    res.render('nosql-javascript-injection')
+}
+
+const secret_post = (req, res) => {
+    MongoClient.connect(dbURL, mongodb_config, (err, client) => {
+        if (err) return res.status('500').send('MongoDB is not installed, Please follow the installation guideline.');
+        const db = client.db('vuln_nodejs_app')
+        db.collection('secret').find({ $where: "this.password =='"+req.body.password+"'"}).toArray()
+            .then((secret) => {
+                if (secret.length == 0) return res.status(403).send('Incorrect password!')
+                res.send(secret[0].flag)
+            }).catch((err) => {
+                res.status(500).send('Internal server error!');
+            })
     })
 }
 
@@ -743,5 +767,7 @@ module.exports = {
     svg_xss_get,
     svg_xss_fileupload_post,
     jsonp_injection_get,
-    jsonp_wallet_get
+    jsonp_wallet_get,
+    nosql_javascript_injection_get,
+    secret_post
 }

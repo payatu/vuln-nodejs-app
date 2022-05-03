@@ -142,4 +142,8 @@ router.get('/jsonp-injection', authenticateToken, vuln_controller.jsonp_injectio
 
 router.get('/jsonp-injection/wallet-usd-balance', authenticateToken, vuln_controller.jsonp_wallet_get);
 
+router.get('/nosql-js-injection', authenticateToken, vuln_controller.nosql_javascript_injection_get);
+
+router.post('/unlock-secret', authenticateToken, vuln_controller.secret_post);
+
 module.exports = router;

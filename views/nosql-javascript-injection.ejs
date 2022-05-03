@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include ('includes/header.ejs') %>
+</head>
+
+<body>
+    <%- include ('includes/navigation.ejs') %>
+    <div class='container' style='min-height: 450px'>
+        <h2>NoSQL Javascript Injection</h2>
+        <br>
+        <p>Application has a password protected secret your goal is to access it by using NoSQL injection.</p>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h5 class="card-title">Secret</h5>
+                <p class="card-text"><input class="form-control" id="secret" type="text" value=""
+                    placeholder="*************" readonly></p>
+                <p class="card-text">Password <input class="form-control" id="password" type="password" value=""
+                            placeholder=""></p>
+                            <div id="message" style="color: red"></div><br>
+                <input type="submit" value="Unlock" onclick="unlock()" class="btn btn-primary">
+            </div>
+        </div>
+        <br><br>
+        <script>
+            function unlock() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    document.getElementById("message").innerHTML = '';
+                    document.getElementById("secret").value = '';
+                    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        document.getElementById("secret").value = xhr.response;
+                    }
+                    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 403 || xhr.status == 500) {
+                        document.getElementById("message").innerHTML = xhr.response;
+                    }
+                }
+                xhr.open('POST', window.location.origin+'/unlock-secret')
+                xhr.setRequestHeader('Content-Type', 'application/json')
+                xhr.withCredentials = true;
+                var data = JSON.stringify({password: password.value});
+                xhr.send(data);
+            }
+        </script>
+</body>
+
+</html>

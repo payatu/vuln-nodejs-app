@@ -86,6 +86,9 @@
 - [26 JSONP Injection](#26-jsonp-injection)
   - [Exploit](#exploit-24)
   - [Vulnerable Code](#vulnerable-code-23)
+- [NoSQL JavaScript Injection](#nosql-javascript-injection)
+  - [Exploit](#exploit-25)
+  - [Vulnerable Code](#vulnerable-code-24)
 
 <div class="page-break"></div>
 
@@ -1378,6 +1381,48 @@ const jsonp_wallet_get = (req, res)=>{
             const data = {username: req.user.username, btc: bitcoin_usd_value, eth: ethereum_usd_value, total: total_usd_value}
             res.jsonp(data) // send jsonp data
         }) 
+    })
+}
+```
+
+## NoSQL JavaScript Injection
+
+Application has a password protected secret your goal is to access it by using NoSQL injection.
+
+### Exploit
+
+1. Go to ./nosql-js-injection
+2. Enter random password while intercepting request using burpsuite.
+3. Change the request payload with following injection payload.
+
+```json
+{"password":"'; return ''=='"}
+```
+
+Above payload is similar to SQL injection payload `' or 1=1--` but here we injected javascript code as NoSQL database allow us to run javascript in database engine if passed through functions that allow it, such as `$where` function that is being used in this exercise. Javascript execution exposes a dangerous attack surface if unsanitized user input finds it's way to the query.
+
+### Vulnerable Code
+
+**Route: /routes/app.js**
+
+```js
+router.post('/unlock-secret', authenticateToken, vuln_controller.secret_post);
+```
+
+**Controller: /controllers/vuln_controller.js**
+
+```js
+const secret_post = (req, res) => {
+    MongoClient.connect(dbURL, mongodb_config, (err, client) => {
+        if (err) return res.status('500').send('MongoDB is not installed, Please follow the installation guideline.');
+        const db = client.db('vuln_nodejs_app')
+        db.collection('secret').find({ $where: "this.password =='"+req.body.password+"'"}).toArray()
+            .then((secret) => {
+                if (secret.length == 0) return res.status(403).send('Incorrect password!')
+                res.send(secret[0].flag)
+            }).catch((err) => {
+                res.status(500).send('Internal server error!');
+            })
     })
 }
 ```
