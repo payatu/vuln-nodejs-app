@@ -30,7 +30,7 @@ app.use(express.static(path.resolve(__dirname, './vuln_react_app/build')));
 app.set('view engine', 'ejs');
 
 const server = app.listen(process.env.HOST_PORT, function () {
-    console.log("Listening on port tester", process.env.HOST_PORT);
+    console.log("Listening on port ", process.env.HOST_PORT);
 });
 
 const io = require('socket.io')(server);
