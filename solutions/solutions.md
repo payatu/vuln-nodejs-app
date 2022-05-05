@@ -41,25 +41,25 @@
 - [11. postMessage CSRF](#11-postmessage-csrf)
   - [Exploit](#exploit-9)
   - [Vulnerable Code](#vulnerable-code-9)
-- [12 Information Disclosure using addEventListener](#12-information-disclosure-using-addeventlistener)
+- [12. Information Disclosure using addEventListener](#12-information-disclosure-using-addeventlistener)
   - [Exploit](#exploit-10)
   - [Vulnerable code:](#vulnerable-code-10)
-- [13 CORS Information Disclosure](#13-cors-information-disclosure)
+- [13. CORS Information Disclosure](#13-cors-information-disclosure)
   - [Exploit:](#exploit-11)
   - [Vulnerable Code](#vulnerable-code-11)
-- [14 CORS CSRF](#14-cors-csrf)
+- [14. CORS CSRF](#14-cors-csrf)
   - [Exploit:](#exploit-12)
   - [Vulnerable Code](#vulnerable-code-12)
-- [15 Insecure 2FA implementation.](#15-insecure-2fa-implementation)
+- [15. Insecure 2FA implementation.](#15-insecure-2fa-implementation)
   - [Exploit:](#exploit-13)
 - [16. Cross-Site WebSocket Hijacking](#16-cross-site-websocket-hijacking)
   - [Exploit](#exploit-14)
   - [Vulnerable Code](#vulnerable-code-13)
   - [Fix](#fix-4)
-- [17 WebSocket XSS](#17-websocket-xss)
+- [17. WebSocket XSS](#17-websocket-xss)
   - [Exploit](#exploit-15)
   - [Vulnerable code](#vulnerable-code-14)
-- [18 ReactJS XSS](#18-reactjs-xss)
+- [18. ReactJS XSS](#18-reactjs-xss)
   - [Exploit](#exploit-16)
   - [Vulnerable Code](#vulnerable-code-15)
 - [19. React ref-innerHTML XSS](#19-react-ref-innerhtml-xss)
@@ -80,13 +80,13 @@
 - [24. GraphQL IDOR](#24-graphql-idor)
   - [Exploit](#exploit-22)
   - [Vulnerable code](#vulnerable-code-21)
-- [25 XSS using SVG file upload](#25-xss-using-svg-file-upload)
+- [25. XSS using SVG file upload](#25-xss-using-svg-file-upload)
   - [Exploit](#exploit-23)
   - [Vulnerable Code](#vulnerable-code-22)
 - [26 JSONP Injection](#26-jsonp-injection)
   - [Exploit](#exploit-24)
   - [Vulnerable Code](#vulnerable-code-23)
-- [NoSQL JavaScript Injection](#nosql-javascript-injection)
+- [27. NoSQL JavaScript Injection](#27-nosql-javascript-injection)
   - [Exploit](#exploit-25)
   - [Vulnerable Code](#vulnerable-code-24)
 
@@ -628,7 +628,7 @@ window.addEventListener('message', function (event) {
   })
 ```
 
-## 12 Information Disclosure using addEventListener
+## 12. Information Disclosure using addEventListener
 
 In this exercise you will learn how insecure use of `postMessage` can be used to steal the sensitive information, `/api-token` page has a button to show your API Key, when you click on it, it will open a new popup window which will fetch the user API token and send it to the opener window using postmessage, Since it sends the message to the opener window without specifically specifying the origin, An attacker domain which opens the `/api-token/show` will be able to receive the API token.
 
@@ -661,7 +661,7 @@ Save the following HTML code in an HTML file, host it on your server and send th
 </script>
 ```
 
-## 13 CORS Information Disclosure
+## 13. CORS Information Disclosure
 
 `cors-api-token` endpoint is vulnerable to Cross-Origin Resource Sharing your goal is to exploit it to steal victim user API Token.
 
@@ -725,7 +725,7 @@ const cors_api_token_get = (req, res) => {
 }
 ```
 
-## 14 CORS CSRF
+## 14. CORS CSRF
 
 `cors-csrf-edit-password` endpoint is used for updating password this endpoint only accepts content type `application/json` and it is not possible to send this content type without application allowing cross origin connection so we test for it and find out that endpoint is vulnerable to Cross Origin Resource Sharing we can exploit it to perform CSRF and change victim password.  
 
@@ -811,7 +811,7 @@ const cors_csrf_edit_password_post = (req, res) => {
         })
 }
 ```
-## 15 Insecure 2FA implementation.
+## 15. Insecure 2FA implementation.
 
 Application has implemented 2FA insecurely it presents a 2FA page after login if users have enabled it but an attacker can bypass it by forced browsing.
 
@@ -863,7 +863,7 @@ window.onload = function(){
 
 Use the latest version of the socket.io package to fix the issue as the version used in the application by default enables the CORS.
 
-## 17 WebSocket XSS
+## 17. WebSocket XSS
 
 Application is using socket.io for real-time chat but has only implemented client-side input sanitization which can be bypassed by intercepting the request before it goes to the server.
 
@@ -896,7 +896,7 @@ Application is using socket.io for real-time chat but has only implemented clien
   })
 ```
 
-## 18 ReactJS XSS
+## 18. ReactJS XSS
 
 Application is using ReactJS which provides by default protection from XSS attacks by encoding dangerous characters before appending it to the page but there are cases when it will not protect from XSS attacks, for example: when the application passes user-supplied input to `href` attribute.
 
@@ -1258,7 +1258,7 @@ async function graphql_ShowProfile(args){
 }
 ```
 
-## 25 XSS using SVG file upload
+## 25. XSS using SVG file upload
 
 Application allows users to upload .svg file as a profile picture your goal is to steal other user information by using XSS.
 
@@ -1385,7 +1385,7 @@ const jsonp_wallet_get = (req, res)=>{
 }
 ```
 
-## NoSQL JavaScript Injection
+## 27. NoSQL JavaScript Injection
 
 Application has a password protected secret your goal is to access it by using NoSQL injection.
 
